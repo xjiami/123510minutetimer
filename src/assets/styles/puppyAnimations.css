@@ -1,0 +1,358 @@
+/* puppyAnimations.css - 小狗赛跑计时器的动画定义 */
+@import './puppyVariables.css';
+
+/* 基础跑步动画 */
+@keyframes run {
+  0%, 100% {
+    transform: translateY(0) translateZ(0);
+  }
+  50% {
+    transform: translateY(-3px) translateZ(2px);
+  }
+}
+
+/* 腿部动画 */
+@keyframes leg-front {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-20deg);
+  }
+}
+
+@keyframes leg-back {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+
+/* 尾巴摆动 */
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 耳朵抖动 */
+@keyframes ear-twitch {
+  0%, 100% {
+    transform: rotate(var(--ear-rotation, -15deg));
+  }
+  50% {
+    transform: rotate(calc(var(--ear-rotation, -15deg) - 5deg));
+  }
+}
+
+/* 呼吸效果 */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* 胜利跳跃 */
+@keyframes victory-jump {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-30px) rotate(5deg);
+  }
+  75% {
+    transform: translateY(-30px) rotate(-5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+/* 灰尘效果 */
+@keyframes dust-float {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-20px) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* 思考泡泡 */
+@keyframes thought-appear {
+  0% {
+    transform: scale(0) translateY(20px);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.1) translateY(-5px);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 完成闪光 */
+@keyframes finish-flash {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* 骨头飞行 */
+@keyframes bone-float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(90deg);
+  }
+  75% {
+    transform: translateY(-10px) rotate(270deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+/* 云朵飘动 */
+@keyframes cloud-drift {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100vw);
+  }
+}
+
+/* 太阳光芒 */
+@keyframes sun-ray {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 倒计时闪烁 */
+@keyframes countdown-flash {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 排名标记动画 */
+@keyframes rank-appear {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  80% {
+    transform: scale(0.9) rotate(-5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* 小狗跑步动画 */
+@keyframes puppy-run {
+  0% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-5px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 小狗腿部运动动画 */
+@keyframes leg-run {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(45deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* 小狗尾巴摇动动画 */
+@keyframes tail-wag {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* 小狗耳朵抖动动画 */
+@keyframes ear-flop {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-15deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* 小狗庆祝动画 */
+@keyframes puppy-celebrate {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.1);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 脉冲闪烁动画 */
+@keyframes puppy-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 应用动画的类 */
+.puppy-running {
+  animation: run var(--animation-speed-normal) infinite;
+}
+
+.puppy-leg-front {
+  animation: leg-front var(--animation-speed-normal) infinite;
+}
+
+.puppy-leg-back {
+  animation: leg-back var(--animation-speed-normal) infinite;
+}
+
+.puppy-tail {
+  animation: tail-wag var(--animation-speed-normal) infinite;
+}
+
+.puppy-ear {
+  animation: ear-twitch var(--animation-speed-slow) infinite;
+}
+
+.puppy-idle {
+  animation: breathe var(--animation-speed-slow) infinite;
+}
+
+.puppy-victory {
+  animation: victory-jump var(--animation-speed-slow) forwards;
+}
+
+.dust-particle {
+  animation: dust-float var(--animation-speed-normal) forwards;
+}
+
+.thought-bubble {
+  animation: thought-appear var(--animation-speed-normal) forwards;
+}
+
+.finish-flash {
+  animation: finish-flash var(--animation-speed-slow) forwards;
+}
+
+.floating-bone {
+  animation: bone-float var(--animation-speed-normal) infinite;
+}
+
+.drifting-cloud {
+  animation: cloud-drift calc(var(--animation-speed-slow) * 10) linear infinite;
+}
+
+.sun-rays {
+  animation: sun-ray calc(var(--animation-speed-slow) * 15) linear infinite;
+}
+
+.countdown-active {
+  animation: countdown-flash var(--animation-speed-fast) infinite;
+}
+
+.rank-badge {
+  animation: rank-appear var(--animation-speed-normal) forwards;
+}
+
+/* 应用到运行状态的小狗 */
+.puppy.running {
+  animation: puppy-run var(--run-duration) infinite;
+}
+
+.puppy.running .puppy-leg {
+  animation: leg-run var(--leg-duration) infinite;
+}
+
+.puppy.running .puppy-tail {
+  animation: tail-wag var(--tail-duration) infinite;
+}
+
+.puppy.running .puppy-ear {
+  animation: ear-flop var(--ear-duration) infinite alternate;
+}
+
+/* 应用到完成状态的小狗 */
+.puppy.finished {
+  animation: puppy-celebrate var(--celebrate-duration) infinite;
+} 

@@ -1,0 +1,8129 @@
+<template>
+  <div class="puppy-run-timer">
+    <div class="timer-container">
+      <div class="timer-display" :class="{'countdown-active': isCountdownActive}">
+        <div class="timer-flash" v-if="isCountdownActive"></div>
+        {{ formattedTime }}
+      </div>
+      
+      <div class="race-track" ref="trackRef">
+        <!-- 赛道背景 -->
+        <div class="track-background">
+          <div class="sky-gradient"></div>
+        <div class="grass-background"></div>
+          <div class="sun">
+            <div class="sun-ray" v-for="i in 12" :key="`sun-ray-${i}`" :style="{ transform: `rotate(${i * 30}deg)` }"></div>
+          </div>
+        </div>
+        
+        <!-- 3D赛道地面 -->
+        <div class="track-ground"></div>
+        
+        <!-- 赛道线 -->
+        <div class="track-lines">
+          <div class="track-line track-line-1"></div>
+          <div class="track-line track-line-2"></div>
+          <div class="track-line track-line-3"></div>
+        </div>
+        
+        <!-- 赛道标记 -->
+        <div class="distance-markers">
+          <div class="distance-marker marker-20">20%</div>
+          <div class="distance-marker marker-40">40%</div>
+          <div class="distance-marker marker-60">60%</div>
+          <div class="distance-marker marker-80">80%</div>
+          <div class="distance-marker marker-100">100%</div>
+        </div>
+        
+        <!-- 起跑线和终点线 -->
+        <div class="start-line"></div>
+        <div class="finish-line"></div>
+        
+        <!-- 小狗们 -->
+        <div class="puppies-container">
+          <!-- 主角小狗（棕色） -->
+          <div
+          ref="puppyRef"
+            :class="['puppy', 'puppy-brown', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+        >
+          <div class="puppy-body">
+            <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+            </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 思考泡泡 -->
+            <div v-if="showThoughtBubble" class="thought-bubble">
+              {{ thoughtContent }}
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 白色小狗（AI对手） -->
+          <div
+            ref="puppyWhiteRef"
+            :class="['puppy', 'puppy-white', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+            <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+            </div>
+              <div class="puppy-tail"></div>
+          </div>
+          
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 黑色小狗（AI对手） -->
+          <div
+            ref="puppyBlackRef"
+            :class="['puppy', 'puppy-black', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+        </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+      </div>
+      
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+      </div>
+      
+          <!-- 斑点小狗（AI对手） -->
+          <div
+            ref="puppySpottedRef"
+            :class="['puppy', 'puppy-spotted', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+      </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+        </div>
+        
+        <!-- 骨头（目标） -->
+        <div class="bone" ref="boneRef">
+          <div class="bone-end bone-left"></div>
+          <div class="bone-middle"></div>
+          <div class="bone-end bone-right"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, watch, onMounted } from 'vue';
+import gsap from 'gsap';
+import { useTimerStore } from '../../store/timerStore';
+import { formatTime } from '../../utils/timerUtils';
+
+const props = defineProps({
+  time: {
+    type: Number,
+    required: true
+  },
+  progress: {
+    type: Number,
+    required: true
+  },
+  isRunning: {
+    type: Boolean,
+    required: true
+  },
+  isFinished: {
+    type: Boolean,
+    required: true
+  }
+});
+
+const emit = defineEmits(['timer-start', 'timer-pause', 'timer-reset', 'timer-end']);
+
+// 计时器状态
+const puppyPosition = computed(() => props.progress);
+const puppyRef = ref(null);
+const trackRef = ref(null);
+const collectedMilestones = ref([]);
+const showThoughtBubble = ref(false);
+const thoughtContent = ref('');
+const celebrationDone = ref(false);
+
+// 计算总时间（秒）
+const totalSeconds = computed(() => Math.floor(props.time));
+
+// 计算分钟和秒钟
+const minutes = computed(() => Math.floor(totalSeconds.value / 60));
+const seconds = computed(() => totalSeconds.value % 60);
+
+// 格式化时间显示
+const formattedTime = computed(() => {
+  return formatTime(minutes.value, seconds.value);
+});
+
+const puppyWhiteRef = ref(null);
+const puppyBlackRef = ref(null);
+const puppySpottedRef = ref(null);
+const soundEnabled = ref(true);
+const startSoundRef = ref(null);
+const runningSoundRef = ref(null);
+const finishSoundRef = ref(null);
+const collectSoundRef = ref(null);
+
+// 声明倒计时状态
+const isCountdownActive = ref(false);
+
+// AI小狗状态
+const aiPuppiesInitialized = ref(false);
+
+// 监听计时器状态变化
+watch(() => props.isRunning, (newVal, oldVal) => {
+  console.log('isRunning 变化:', newVal, oldVal);
+  if (newVal && !oldVal) {
+    // 计时器启动
+    console.log('计时器启动，当前进度:', props.progress);
+    
+    // 确保所有小狗显示在起点
+    if (puppyRef.value) puppyRef.value.style.left = '10px';
+    if (puppyWhiteRef.value) puppyWhiteRef.value.style.left = '10px';
+    if (puppyBlackRef.value) puppyBlackRef.value.style.left = '10px';
+    if (puppySpottedRef.value) puppySpottedRef.value.style.left = '10px';
+    
+    gsap.to(puppyRef.value, {
+      scale: 1.05,
+      duration: 0.2,
+      yoyo: true,
+      repeat: 1
+    });
+    
+    // 播放开始音效
+    if (soundEnabled.value && startSoundRef.value) {
+      startSoundRef.value.play().catch(err => {
+        console.error('无法播放开始声音:', err);
+      });
+      
+      setTimeout(() => {
+        if (runningSoundRef.value) {
+          runningSoundRef.value.play().catch(err => {
+            console.error('无法播放奔跑声音:', err);
+          });
+        }
+      }, 1000);
+    }
+    
+    // 立即执行一次位置更新
+  updatePuppyPosition();
+    
+    // 初始化AI小狗
+    initAIPuppies();
+  } else if (!newVal && oldVal) {
+    // 计时器暂停
+    console.log('计时器暂停');
+    gsap.to(puppyRef.value, {
+      scale: 1,
+      duration: 0.2
+    });
+    
+    // 暂停奔跑音效
+    if (runningSoundRef.value) {
+      runningSoundRef.value.pause();
+    }
+  }
+});
+
+// 监听计时结束
+watch(() => props.isFinished, (newVal) => {
+  if (newVal) {
+    celebrateFinish();
+    // 停止奔跑音效，播放完成音效
+    runningSoundRef.value.pause();
+    if (soundEnabled.value) {
+      finishSoundRef.value.play();
+    }
+  }
+});
+
+// 监听秒数变化，添加倒计时特效
+watch(() => seconds.value, (newVal) => {
+  // 当剩余时间不到10秒时，激活倒计时特效
+  if (props.isRunning && !props.isFinished && totalSeconds.value <= 10) {
+    isCountdownActive.value = true;
+    
+    // 播放滴答声
+    if (soundEnabled.value && newVal > 0) {
+      playTickSound();
+    }
+  } else {
+    isCountdownActive.value = false;
+  }
+});
+
+// 播放倒计时滴答声
+const playTickSound = () => {
+  if (!soundEnabled.value) return;
+  
+  const tickSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-clock-timer-ticking-1056.mp3');
+  tickSound.volume = 0.3;
+  tickSound.play();
+  
+  // 设定声音自动停止
+  setTimeout(() => {
+    tickSound.pause();
+    tickSound.remove();
+  }, 1000);
+};
+
+// 增强celebrateFinish方法
+const celebrateFinish = () => {
+  // 增强完成动画效果
+  const puppy = puppyRef.value;
+  if (!puppy || celebrationDone.value) return;
+  
+  celebrationDone.value = true;
+  
+  // 触发完成事件
+  emit('timer-end');
+  
+  // 创建闪光特效
+  createFinishFlash();
+  
+  // 显示排名效果
+  showRankings();
+  
+  // 小狗跳跃庆祝 - 增强3D效果
+  gsap.to(puppy, {
+    y: '-30px',
+    rotateX: '20deg',
+      duration: 0.3,
+      repeat: 3,
+      yoyo: true,
+    ease: "power2.out",
+    onComplete: () => {
+      // 小狗兴奋旋转 - 3D效果
+      gsap.to(puppy, {
+        rotationY: 360,
+        duration: 0.8,
+        ease: "power1.inOut",
+        onComplete: () => {
+          // 恢复原位并显示思考泡泡
+          gsap.to(puppy, {
+            rotation: 0,
+            rotationY: 0,
+            rotateX: 0,
+            duration: 0.5,
+            onComplete: () => {
+              showThoughtBubble.value = true;
+              thoughtContent.value = '太棒了！我做到了！';
+              setTimeout(() => {
+                showThoughtBubble.value = false;
+              }, 3000);
+            }
+          });
+        }
+      });
+    }
+  });
+
+  // 创建更多庆祝效果
+  createConfetti();
+  
+  // 玩家小狗胜利音效
+  if (soundEnabled.value && finishSoundRef.value) {
+    finishSoundRef.value.play().catch(err => {
+      console.error('无法播放完成音效:', err);
+    });
+  }
+};
+
+// 显示排名效果
+const showRankings = () => {
+  // 获取所有小狗的位置
+  const puppyPositions = [
+    { ref: puppyRef.value, name: '主角小狗', position: parseFloat(puppyRef.value.style.left) },
+    { ref: puppyWhiteRef.value, name: '白色小狗', position: parseFloat(puppyWhiteRef.value.style.left) },
+    { ref: puppyBlackRef.value, name: '黑色小狗', position: parseFloat(puppyBlackRef.value.style.left) },
+    { ref: puppySpottedRef.value, name: '斑点小狗', position: parseFloat(puppySpottedRef.value.style.left) }
+  ];
+  
+  // 根据位置排序
+  puppyPositions.sort((a, b) => b.position - a.position);
+  
+  // 为前三名创建奖牌
+  for (let i = 0; i < 3; i++) {
+    if (i >= puppyPositions.length) break;
+    
+    const puppy = puppyPositions[i].ref;
+    const medal = document.createElement('div');
+    medal.className = `medal medal-${i+1}`;
+    medal.innerHTML = `${i+1}`;
+    
+    // 将奖牌添加到小狗上
+    puppy.appendChild(medal);
+    
+    // 奖牌动画
+    gsap.from(medal, {
+      scale: 0,
+      opacity: 0,
+      duration: 0.5,
+      delay: i * 0.2,
+      ease: "back.out(1.7)"
+    });
+  }
+};
+
+// 调整toggleTimer方法，添加触觉反馈
+const toggleTimer = () => {
+  console.log('Toggle Timer 按钮点击');
+  if (!props.isRunning) {
+    console.log('发送 timer-start 事件');
+    emit('timer-start');
+    
+    // 如果支持，添加触觉反馈
+    if (window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(100);
+    }
+  } else {
+    console.log('发送 timer-pause 事件');
+    emit('timer-pause');
+  }
+};
+
+// 调整resetTimer方法
+const resetTimer = () => {
+  console.log('发送 timer-reset 事件');
+  emit('timer-reset');
+  celebrationDone.value = false;
+  
+  // 重置小狗位置
+  if (puppyRef.value) {
+    gsap.to(puppyRef.value, { left: '10px', duration: 0.5 });
+  }
+  if (puppyWhiteRef.value) {
+    gsap.to(puppyWhiteRef.value, { left: '10px', duration: 0.5 });
+  }
+  if (puppyBlackRef.value) {
+    gsap.to(puppyBlackRef.value, { left: '10px', duration: 0.5 });
+  }
+  if (puppySpottedRef.value) {
+    gsap.to(puppySpottedRef.value, { left: '10px', duration: 0.5 });
+  }
+  
+  // 移除所有奖牌
+  document.querySelectorAll('.medal').forEach(medal => {
+    if (medal.parentNode) {
+      medal.parentNode.removeChild(medal);
+    }
+  });
+  
+  // 重置里程碑
+  collectedMilestones.value = [];
+  
+  // 移除所有动态元素并重新添加
+  cleanupDynamicElements();
+  setTimeout(() => {
+    addDynamicElements();
+  }, 100);
+};
+
+// 清理动态元素
+const cleanupDynamicElements = () => {
+  const elements = ['.bird', '.butterfly', '.cloud-shadow', '.confetti', '.finish-flash', '.flying-bone', '.plus-one'];
+  elements.forEach(selector => {
+    document.querySelectorAll(selector).forEach(el => {
+      if (el.parentNode) {
+        el.parentNode.removeChild(el);
+      }
+    });
+  });
+};
+
+// 初始化AI小狗
+const initAIPuppies = () => {
+  if (aiPuppiesInitialized.value) return;
+  
+  aiPuppiesInitialized.value = true;
+  const trackWidth = trackRef.value.clientWidth - 50;
+  
+  // 白色小狗 - 快速但起步慢
+  let whiteStart = 0;
+  const whiteInterval = setInterval(() => {
+    if (!props.isRunning || props.isFinished) return;
+    
+    if (whiteStart < 10) {
+      whiteStart += 0.5;
+    } else {
+      // 随机速度，但总体较快
+      const speed = 0.4 + (Math.random() * 0.4);
+      const newPosition = parseFloat(puppyWhiteRef.value.style.left || '10px') + speed;
+      
+      // 确保不超出赛道
+      if (newPosition <= trackWidth) {
+        gsap.to(puppyWhiteRef.value, {
+          left: `${newPosition}px`,
+      duration: 0.2,
+          ease: "none"
+        });
+      } else {
+        clearInterval(whiteInterval);
+      }
+    }
+  }, 100);
+  
+  // 黑色小狗 - 匀速但稳定
+  const blackInterval = setInterval(() => {
+    if (!props.isRunning || props.isFinished) return;
+    
+    // 稳定的中等速度
+    const speed = 0.35;
+    const newPosition = parseFloat(puppyBlackRef.value.style.left || '10px') + speed;
+    
+    // 确保不超出赛道
+    if (newPosition <= trackWidth) {
+      gsap.to(puppyBlackRef.value, {
+        left: `${newPosition}px`,
+      duration: 0.2,
+        ease: "none"
+      });
+    } else {
+      clearInterval(blackInterval);
+    }
+  }, 100);
+  
+  // 斑点小狗 - 速度不稳定
+  const spottedInterval = setInterval(() => {
+    if (!props.isRunning || props.isFinished) return;
+    
+    // 速度不稳定，时快时慢
+    const isSpurt = Math.random() > 0.7;
+    const speed = isSpurt ? 0.7 : 0.2;
+    const newPosition = parseFloat(puppySpottedRef.value.style.left || '10px') + speed;
+    
+    // 确保不超出赛道
+    if (newPosition <= trackWidth) {
+      gsap.to(puppySpottedRef.value, {
+        left: `${newPosition}px`,
+        duration: 0.2,
+        ease: "none"
+      });
+      
+      // 冲刺时显示加速效果
+      if (isSpurt) {
+        const dust = document.createElement('div');
+        dust.className = 'dust-cloud small';
+        dust.style.left = `${newPosition - 15}px`;
+        dust.style.top = '210px';
+        trackRef.value.appendChild(dust);
+        
+        setTimeout(() => {
+          if (dust.parentNode) {
+            dust.parentNode.removeChild(dust);
+          }
+        }, 1000);
+      }
+    } else {
+      clearInterval(spottedInterval);
+    }
+  }, 100);
+  
+  // 清理函数
+  const cleanup = () => {
+    clearInterval(whiteInterval);
+    clearInterval(blackInterval);
+    clearInterval(spottedInterval);
+    aiPuppiesInitialized.value = false;
+  };
+  
+  // 监听重置事件
+  watch(() => props.isFinished, (newVal) => {
+    if (newVal) {
+      cleanup();
+    }
+  });
+};
+
+// 切换音效
+const toggleSound = () => {
+  soundEnabled.value = !soundEnabled.value;
+  
+  // 根据状态控制声音
+  if (!soundEnabled.value) {
+    // 静音所有正在播放的声音
+    if (runningSoundRef.value) {
+      runningSoundRef.value.pause();
+    }
+  } else {
+    // 如果正在运行，恢复跑步声音
+    if (props.isRunning && !props.isFinished && runningSoundRef.value) {
+      runningSoundRef.value.play();
+    }
+  }
+  
+  // 存储用户的音效设置
+  try {
+    localStorage.setItem('puppyRunSoundEnabled', soundEnabled.value.toString());
+  } catch (e) {
+    console.error('无法保存声音设置', e);
+  }
+};
+
+// 初始化声音设置
+onMounted(() => {
+  console.log('PuppyRunTimer组件已挂载');
+  
+  // 确保正确初始化引用
+  if (!trackRef.value) {
+    console.error('trackRef未找到');
+  }
+  
+  if (!puppyRef.value) {
+    console.error('puppyRef未找到');
+  }
+  
+  // 从本地存储加载声音设置
+  try {
+    const savedSoundSetting = localStorage.getItem('puppyRunSoundEnabled');
+    if (savedSoundSetting !== null) {
+      soundEnabled.value = savedSoundSetting === 'true';
+    }
+  } catch (e) {
+    console.error('无法加载声音设置', e);
+  }
+  
+  // 配置音频音量
+  if (startSoundRef.value) startSoundRef.value.volume = 0.6;
+  if (runningSoundRef.value) runningSoundRef.value.volume = 0.3;
+  if (finishSoundRef.value) finishSoundRef.value.volume = 0.7;
+  if (collectSoundRef.value) collectSoundRef.value.volume = 0.5;
+  
+  // 确保小狗在起点位置
+  if (puppyRef.value) puppyRef.value.style.left = '10px';
+  if (puppyWhiteRef.value) puppyWhiteRef.value.style.left = '10px';
+  if (puppyBlackRef.value) puppyBlackRef.value.style.left = '10px';
+  if (puppySpottedRef.value) puppySpottedRef.value.style.left = '10px';
+  
+  // 为第一次运行添加动态元素
+  setTimeout(() => {
+    addDynamicElements();
+  }, 500);
+  
+  // 添加初始化调试
+  console.log('初始化状态:', {
+    isRunning: props.isRunning,
+    progress: props.progress,
+    puppyPosition: puppyPosition.value
+  });
+  
+  // 检查音频元素
+  if (!startSoundRef.value) {
+    console.error('开始音效元素未找到');
+  }
+  
+  if (!runningSoundRef.value) {
+    console.error('奔跑音效元素未找到');
+  }
+  
+  // 添加窗口大小变化监听，确保在不同屏幕大小下正常显示
+  window.addEventListener('resize', () => {
+    if (props.isRunning && puppyRef.value && trackRef.value) {
+      // 重新计算并设置小狗位置
+      const trackWidth = trackRef.value.clientWidth - 50;
+      const targetPosition = `${(props.progress * trackWidth) / 100}px`;
+      puppyRef.value.style.left = targetPosition;
+    }
+  });
+});
+
+// 添加赛道的动态元素
+const addDynamicElements = () => {
+  if (!trackRef.value) return;
+  
+  // 添加动态元素
+  const addElement = (className, count = 1) => {
+    for (let i = 0; i < count; i++) {
+      const element = document.createElement('div');
+      element.className = className;
+      
+      // 随机位置
+      element.style.left = `${10 + Math.random() * 80}%`;
+      element.style.bottom = `${Math.random() * 30}%`;
+      
+      if (className === 'tree') {
+        // 随机树大小
+        const size = 30 + Math.random() * 30;
+        element.style.width = `${size}px`;
+        element.style.height = `${size * 1.5}px`;
+      } else if (className === 'bush') {
+        // 随机灌木大小
+        const size = 20 + Math.random() * 20;
+        element.style.width = `${size}px`;
+        element.style.height = `${size}px`;
+      }
+      
+      trackRef.value.appendChild(element);
+    }
+  };
+  
+  // 添加树和灌木丛
+  addElement('tree', 3);
+  addElement('bush', 5);
+  
+  // 添加飞鸟
+  const bird = document.createElement('div');
+  bird.className = 'bird';
+  trackRef.value.appendChild(bird);
+  
+  // 鸟飞行动画
+  gsap.to(bird, {
+    left: '120%',
+    top: '10%',
+    duration: 10,
+    ease: "none",
+    repeat: -1
+  });
+  
+  // 添加蝴蝶
+  for (let i = 0; i < 3; i++) {
+    const butterfly = document.createElement('div');
+    butterfly.className = 'butterfly';
+    butterfly.style.left = `${Math.random() * 100}%`;
+    butterfly.style.top = `${30 + Math.random() * 40}%`;
+    trackRef.value.appendChild(butterfly);
+    
+    // 蝴蝶飞行路径
+    gsap.to(butterfly, {
+      left: `${Math.random() * 100}%`,
+      top: `${30 + Math.random() * 40}%`,
+      duration: 5 + Math.random() * 5,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true
+    });
+  }
+};
+
+// 更新赛道景深效果，使小狗奔跑时有景深效果
+const updateParallaxEffect = (progress) => {
+  if (!trackRef.value) return;
+
+  // 获取所有背景元素
+  const clouds = trackRef.value.querySelectorAll('.cloud');
+  const trees = trackRef.value.querySelectorAll('.tree');
+  const bushes = trackRef.value.querySelectorAll('.bush');
+  
+  // 计算偏移量
+  const offset = progress * 0.5; // 50% 的移动速度
+  
+  // 应用视差效果
+  clouds.forEach(cloud => {
+    gsap.to(cloud, {
+      x: `-=${offset * 0.2}%`, // 云移动最慢
+      duration: 0.5
+    });
+  });
+  
+  trees.forEach(tree => {
+    gsap.to(tree, {
+      x: `-=${offset * 0.5}%`, // 树移动中等速度
+      duration: 0.5
+    });
+  });
+  
+  bushes.forEach(bush => {
+    gsap.to(bush, {
+      x: `-=${offset * 0.8}%`, // 灌木移动较快
+      duration: 0.5
+    });
+  });
+};
+
+// 更新小狗位置的方法
+const updatePuppyPosition = () => {
+  if (!puppyRef.value) return;
+  
+  // 计算主角小狗位置
+  const mainProgress = calculatePuppyPosition(props.progress);
+  
+  // 所有小狗都从起跑线（左侧）开始向右移动
+  
+  // 主角小狗（棕色）
+  gsap.to(puppyRef.value, {
+    left: `${5 + mainProgress * 75}%`,
+    duration: 0.3,
+    ease: 'power1.out'
+  });
+  
+  // 计算AI对手位置（根据主角进度随机生成，但保持分散）
+  if (puppyWhiteRef.value && puppyBlackRef.value && puppySpottedRef.value) {
+    // 白色小狗 - 保持在主角后面一定距离
+    const whiteProgress = Math.max(0, mainProgress * (0.92 + Math.random() * 0.05));
+    gsap.to(puppyWhiteRef.value, {
+      left: `${15 + whiteProgress * 65}%`,
+      duration: 0.3,
+      ease: 'power1.out'
+    });
+    
+    // 黑色小狗 - 保持在白色小狗后面一定距离
+    const blackProgress = Math.max(0, mainProgress * (0.85 + Math.random() * 0.05));
+    gsap.to(puppyBlackRef.value, {
+      left: `${25 + blackProgress * 55}%`,
+      duration: 0.3,
+      ease: 'power1.out'
+    });
+    
+    // 斑点小狗 - 保持在黑色小狗后面一定距离
+    const spottedProgress = Math.max(0, mainProgress * (0.78 + Math.random() * 0.05));
+    gsap.to(puppySpottedRef.value, {
+      left: `${35 + spottedProgress * 45}%`,
+      duration: 0.3,
+      ease: 'power1.out'
+    });
+  }
+  
+  // 更新视差效果
+  updateParallaxEffect(props.progress);
+  
+  // 检查里程碑
+  checkMilestones();
+  
+  // 特殊效果：在特定进度显示思考泡泡
+  if (props.progress > 30 && props.progress < 35 && !collectedMilestones.value.includes(25)) {
+    showThoughtBubble.value = true;
+    thoughtContent.value = '好香的骨头！';
+    setTimeout(() => {
+      showThoughtBubble.value = false;
+    }, 2000);
+  } else if (props.progress > 60 && props.progress < 65 && !collectedMilestones.value.includes(50)) {
+    showThoughtBubble.value = true;
+    thoughtContent.value = '我快到了！';
+    setTimeout(() => {
+      showThoughtBubble.value = false;
+    }, 2000);
+  } else if (props.progress > 85 && props.progress < 90 && !collectedMilestones.value.includes(75)) {
+    showThoughtBubble.value = true;
+    thoughtContent.value = '终点就在前方！';
+    setTimeout(() => {
+      showThoughtBubble.value = false;
+    }, 2000);
+  }
+  
+  // 完成时的特殊效果
+  if (props.progress >= 100) {
+  celebrateFinish();
+  }
+};
+
+// 计算小狗位置（平滑曲线）
+const calculatePuppyPosition = (progress) => {
+  // 使用缓动函数让终点附近放慢速度
+  if (progress >= 100) return 1;
+  const normalizedProgress = Math.min(1, progress / 100);
+  // 使用二次缓动函数使运动更平滑
+  return normalizedProgress * normalizedProgress;
+};
+
+// 监听时间变化，实时更新
+watch([minutes, seconds], () => {
+  if (props.isRunning && !props.isFinished) {
+    updatePuppyPosition();
+  }
+});
+
+// 添加额外的监听器，直接响应props.progress的变化
+watch(() => props.progress, (newVal, oldVal) => {
+  if (props.isRunning && !props.isFinished) {
+    updatePuppyPosition();
+  }
+});
+
+const checkMilestones = () => {
+  const milestones = [25, 50, 75];
+  milestones.forEach(milestone => {
+    if (puppyPosition.value >= milestone && !collectedMilestones.value.includes(milestone)) {
+      collectMilestone(milestone);
+    }
+  });
+};
+
+const collectMilestone = (milestone) => {
+  // 添加到已收集里程碑列表
+  collectedMilestones.value.push(milestone);
+  
+  // 播放收集音效
+  if (soundEnabled.value) {
+    collectSoundRef.value.play();
+  }
+  
+  // 播放收集动画
+  const position = (milestone / 100) * (trackRef.value.clientWidth - 50);
+  
+  // 创建一个飞向小狗的骨头
+  const flyingBone = document.createElement('div');
+  flyingBone.className = 'flying-bone';
+  flyingBone.style.left = `${position}px`;
+  trackRef.value.appendChild(flyingBone);
+  
+  // 播放飞行动画
+  gsap.to(flyingBone, {
+    left: `${puppyPosition.value / 100 * (trackRef.value.clientWidth - 50)}px`,
+    top: '200px',
+    opacity: 0,
+    rotation: 360,
+    duration: 0.8,
+    ease: "power2.in",
+    onComplete: () => {
+      // 动画完成后移除元素
+      if (flyingBone.parentNode) {
+        flyingBone.parentNode.removeChild(flyingBone);
+      }
+      
+      // 显示+1效果
+      const plusOne = document.createElement('div');
+      plusOne.className = 'plus-one';
+      plusOne.innerHTML = '+1';
+      plusOne.style.left = `${puppyPosition.value / 100 * (trackRef.value.clientWidth - 50) + 25}px`;
+      plusOne.style.top = '180px';
+      trackRef.value.appendChild(plusOne);
+      
+      gsap.to(plusOne, {
+        top: '150px',
+        opacity: 0,
+        duration: 1,
+        ease: "power1.out",
+        onComplete: () => {
+          if (plusOne.parentNode) {
+            plusOne.parentNode.removeChild(plusOne);
+          }
+        }
+      });
+    }
+  });
+  
+  // 小狗欢呼效果
+  showThoughtBubble.value = true;
+  thoughtContent.value = '哇！骨头！';
+  setTimeout(() => {
+    showThoughtBubble.value = false;
+  }, 1500);
+};
+
+const createFinishFlash = () => {
+  const flash = document.createElement('div');
+  flash.className = 'finish-flash';
+  trackRef.value.appendChild(flash);
+  
+  gsap.to(flash, {
+    opacity: 0,
+    duration: 1.5,
+    onComplete: () => {
+      if (flash.parentNode) {
+        flash.parentNode.removeChild(flash);
+      }
+    }
+  });
+};
+
+const createConfetti = () => {
+  // 创建彩色粒子
+  for (let i = 0; i < 50; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
+    confetti.style.left = `${Math.random() * 100}%`;
+    confetti.style.top = `${Math.random() * 70}%`;
+    confetti.style.animationDuration = `${Math.random() * 2 + 1}s`;
+    confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+    trackRef.value.appendChild(confetti);
+    
+    // 3秒后移除
+    setTimeout(() => {
+      if (confetti.parentNode) {
+        confetti.parentNode.removeChild(confetti);
+      }
+    }, 3000);
+  }
+};
+</script>
+
+<style scoped>
+.puppy-run-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.timer-display {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px 15px;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  min-width: 100px;
+  z-index: 20;
+}
+
+.race-track {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  background-color: #78c27d;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* 赛道背景 */
+.track-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.sky-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: linear-gradient(to bottom, #64B5F6, #90CAF9, #BBDEFB);
+  z-index: 0;
+}
+
+.grass-background {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%2378c27d"/><g fill="%2365a569"><rect x="0" y="50" width="10" height="50"/><rect x="10" y="60" width="10" height="40"/><rect x="20" y="55" width="10" height="45"/><rect x="30" y="65" width="10" height="35"/><rect x="40" y="50" width="10" height="50"/><rect x="50" y="60" width="10" height="40"/><rect x="60" y="55" width="10" height="45"/><rect x="70" y="65" width="10" height="35"/><rect x="80" y="50" width="10" height="50"/><rect x="90" y="60" width="10" height="40"/></g></svg>');
+  background-size: 200px 200px;
+  z-index: 1;
+}
+
+.sun {
+  position: absolute;
+  top: 30px;
+  right: 80px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, #FFEB3B, #FDD835);
+  border-radius: 50%;
+  box-shadow: 0 0 50px rgba(255, 235, 59, 0.7);
+  z-index: 1;
+}
+
+.sun-ray {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 3px;
+  background-color: rgba(255, 235, 59, 0.6);
+  transform-origin: 0 0;
+  animation: sun-ray-rotate 10s linear infinite;
+}
+
+@keyframes sun-ray-rotate {
+  from {
+    transform: rotate(0deg) translateY(-50%);
+  }
+  to {
+    transform: rotate(360deg) translateY(-50%);
+  }
+}
+
+/* 赛道增强效果 */
+.race-track-enhancements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 移动的云效果 */
+.moving-clouds {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+}
+
+.cloud {
+  position: absolute;
+  height: 25px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+  animation: cloud-move linear infinite;
+  top: 10px;
+}
+
+.cloud:before, .cloud:after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+}
+
+.cloud:before {
+  width: 25px;
+  height: 25px;
+  top: -10px;
+  left: 10px;
+}
+
+.cloud:after {
+  width: 20px;
+  height: 20px;
+  top: -5px;
+  right: 10px;
+}
+
+.cloud-1 {
+  width: 70px;
+  animation-duration: 60s;
+  animation-delay: 0s;
+  opacity: 0.9;
+}
+
+.cloud-2 {
+  width: 50px;
+  top: 5px;
+  animation-duration: 45s;
+  animation-delay: 15s;
+  opacity: 0.7;
+}
+
+.cloud-3 {
+  width: 60px;
+  top: 20px;
+  animation-duration: 55s;
+  animation-delay: 30s;
+  opacity: 0.8;
+}
+
+@keyframes cloud-move {
+  0% {
+    transform: translateX(-100px);
+  }
+  100% {
+    transform: translateX(calc(100% + 100px));
+  }
+}
+
+/* 草丛效果 */
+.grass-tufts {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+}
+
+.grass-tuft {
+  position: absolute;
+  bottom: 0;
+  width: 20px;
+  height: 15px;
+  background: linear-gradient(to top, transparent, transparent 30%, #4CAF50 30%);
+  clip-path: polygon(
+    50% 0%, 
+    30% 30%, 
+    60% 20%, 
+    40% 40%, 
+    70% 30%, 
+    50% 50%, 
+    80% 40%, 
+    60% 60%, 
+    90% 50%, 
+    70% 70%, 
+    100% 60%, 
+    80% 80%, 
+    100% 100%, 
+    0 100%, 
+    20% 80%, 
+    0 60%, 
+    30% 70%, 
+    10% 50%, 
+    40% 60%, 
+    20% 40%, 
+    50% 30%, 
+    30% 20%
+  );
+  animation: grass-sway 3s ease-in-out infinite alternate;
+}
+
+@keyframes grass-sway {
+  0% {
+    transform: rotate(-5deg) scaleY(1);
+  }
+  100% {
+    transform: rotate(5deg) scaleY(1.05);
+  }
+}
+
+/* 距离标记 */
+.distance-markers {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+.distance-marker {
+  position: absolute;
+  bottom: 5px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  transform: translateX(-50%);
+}
+
+.marker-20 { left: 20%; }
+.marker-40 { left: 40%; }
+.marker-60 { left: 60%; }
+.marker-80 { left: 80%; }
+.marker-100 { left: 98%; }
+
+/* 起跑线，以3D方式放置 */
+.start-line {
+  position: absolute;
+  bottom: 0;
+  left: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #2196F3,
+    #2196F3 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(-10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 终点线，以3D方式放置 */
+.finish-line {
+  position: absolute;
+  bottom: 0;
+  right: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f44336,
+    #f44336 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 调整小狗整体样式 */
+.puppy {
+  position: absolute;
+  width: 50px;
+  height: 80px;
+  bottom: 20px;
+  transition: all 0.3s ease-out;
+  z-index: 20;
+}
+
+/* 调整小狗的初始位置，竖排且有间距 */
+.puppy-brown {
+  left: 5%;
+  bottom: 20px;
+  z-index: 24;
+}
+
+.puppy-white {
+  left: 5%;
+  bottom: 60px;
+  z-index: 23;
+}
+
+.puppy-black {
+  left: 5%;
+  bottom: 100px;
+  z-index: 22;
+}
+
+.puppy-spotted {
+  left: 5%;
+  bottom: 140px;
+  z-index: 21;
+}
+
+/* 小狗骨架基本结构 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 调整身体结构 */
+.puppy-trunk {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  background-color: inherit;
+  border-radius: 15px 15px 10px 10px;
+  top: 25px;
+  left: 10px;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+}
+
+.puppy-head {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-color: inherit;
+  border-radius: 50%;
+  top: 0;
+  left: 9px;
+  z-index: 10;
+  box-shadow: 2px 3px 5px rgba(0,0,0,0.2);
+}
+
+/* 修改动画与定位逻辑 */
+.puppies-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 更新跑步时的位置计算和3D视角 */
+@keyframes race-perspective {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 修改小狗的奔跑动画和路径，显示3D视角效果 */
+.puppy-running {
+  animation: race-perspective 0.4s infinite;
+}
+
+/* 增加小狗的阴影效果，增强3D感 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 15px;
+  width: 30px;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 80%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* 根据参考网站调整小狗耳朵样式 */
+.puppy-ear {
+  position: absolute;
+  width: 14px;
+  height: 16px;
+  background-color: inherit;
+  border-radius: 7px 7px 0 0;
+  top: -8px;
+}
+
+.puppy-ear-left {
+  left: 2px;
+  transform: rotate(-15deg);
+}
+
+.puppy-ear-right {
+  right: 2px;
+  transform: rotate(15deg);
+}
+
+/* 调整小狗眼睛样式 */
+.puppy-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 12px;
+}
+
+.puppy-eye-left {
+  left: 7px;
+}
+
+.puppy-eye-right {
+  right: 7px;
+}
+
+/* 调整小狗动画关键帧 */
+@keyframes leg-run {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-20deg);
+  }
+}
+
+@keyframes leg-run-back {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 修改HTML结构，确保正确的3D效果 */
+<template>
+  <div class="puppy-run-timer">
+    <div class="timer-container">
+      <div class="timer-display" :class="{'countdown-active': isCountdownActive}">
+        <div class="timer-flash" v-if="isCountdownActive"></div>
+        {{ formattedTime }}
+      </div>
+      
+      <div class="race-track" ref="trackRef">
+        <!-- 赛道背景 -->
+        <div class="track-background">
+          <div class="sky-gradient"></div>
+          <div class="grass-background"></div>
+          <div class="sun">
+            <div class="sun-ray" v-for="i in 12" :key="`sun-ray-${i}`" :style="{ transform: `rotate(${i * 30}deg)` }"></div>
+          </div>
+        </div>
+        
+        <!-- 3D赛道地面 -->
+        <div class="track-ground"></div>
+        
+        <!-- 赛道线 -->
+        <div class="track-lines">
+          <div class="track-line track-line-1"></div>
+          <div class="track-line track-line-2"></div>
+          <div class="track-line track-line-3"></div>
+        </div>
+        
+        <!-- 赛道标记 -->
+        <div class="distance-markers">
+          <div class="distance-marker marker-20">20%</div>
+          <div class="distance-marker marker-40">40%</div>
+          <div class="distance-marker marker-60">60%</div>
+          <div class="distance-marker marker-80">80%</div>
+          <div class="distance-marker marker-100">100%</div>
+        </div>
+        
+        <!-- 起跑线和终点线 -->
+        <div class="start-line"></div>
+        <div class="finish-line"></div>
+        
+        <!-- 小狗们 -->
+        <div class="puppies-container">
+          <!-- 主角小狗（棕色） -->
+          <div
+            ref="puppyRef"
+            :class="['puppy', 'puppy-brown', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 思考泡泡 -->
+            <div v-if="showThoughtBubble" class="thought-bubble">
+              {{ thoughtContent }}
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 白色小狗（AI对手） -->
+          <div
+            ref="puppyWhiteRef"
+            :class="['puppy', 'puppy-white', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 黑色小狗（AI对手） -->
+          <div
+            ref="puppyBlackRef"
+            :class="['puppy', 'puppy-black', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 斑点小狗（AI对手） -->
+          <div
+            ref="puppySpottedRef"
+            :class="['puppy', 'puppy-spotted', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+        </div>
+        
+        <!-- 骨头（目标） -->
+        <div class="bone" ref="boneRef">
+          <div class="bone-end bone-left"></div>
+          <div class="bone-middle"></div>
+          <div class="bone-end bone-right"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+/* 增加赛道地面，带有3D透视效果 */
+.track-ground {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(to bottom, #8FCB91, #78c27d);
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+  z-index: 5;
+}
+
+/* 赛道线，创造3D效果 */
+.track-lines {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+/* 赛道分隔线 */
+.track-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  left: 0;
+}
+
+.track-line-1 { bottom: 25%; }
+.track-line-2 { bottom: 50%; }
+.track-line-3 { bottom: 75%; }
+
+/* 赛道百分比标记 */
+.distance-markers {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+.distance-marker {
+  position: absolute;
+  bottom: 5px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  transform: translateX(-50%);
+}
+
+.marker-20 { left: 20%; }
+.marker-40 { left: 40%; }
+.marker-60 { left: 60%; }
+.marker-80 { left: 80%; }
+.marker-100 { left: 98%; }
+
+/* 起跑线，以3D方式放置 */
+.start-line {
+  position: absolute;
+  bottom: 0;
+  left: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #2196F3,
+    #2196F3 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(-10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 终点线，以3D方式放置 */
+.finish-line {
+  position: absolute;
+  bottom: 0;
+  right: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f44336,
+    #f44336 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 调整小狗整体样式 */
+.puppy {
+  position: absolute;
+  width: 50px;
+  height: 80px;
+  bottom: 20px;
+  transition: all 0.3s ease-out;
+  z-index: 20;
+}
+
+/* 调整小狗的初始位置，竖排且有间距 */
+.puppy-brown {
+  left: 5%;
+  bottom: 20px;
+  z-index: 24;
+}
+
+.puppy-white {
+  left: 5%;
+  bottom: 60px;
+  z-index: 23;
+}
+
+.puppy-black {
+  left: 5%;
+  bottom: 100px;
+  z-index: 22;
+}
+
+.puppy-spotted {
+  left: 5%;
+  bottom: 140px;
+  z-index: 21;
+}
+
+/* 小狗骨架基本结构 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 调整身体结构 */
+.puppy-trunk {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  background-color: inherit;
+  border-radius: 15px 15px 10px 10px;
+  top: 25px;
+  left: 10px;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+}
+
+.puppy-head {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-color: inherit;
+  border-radius: 50%;
+  top: 0;
+  left: 9px;
+  z-index: 10;
+  box-shadow: 2px 3px 5px rgba(0,0,0,0.2);
+}
+
+/* 修改动画与定位逻辑 */
+.puppies-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 更新跑步时的位置计算和3D视角 */
+@keyframes race-perspective {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 修改小狗的奔跑动画和路径，显示3D视角效果 */
+.puppy-running {
+  animation: race-perspective 0.4s infinite;
+}
+
+/* 增加小狗的阴影效果，增强3D感 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 15px;
+  width: 30px;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 80%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* 根据参考网站调整小狗耳朵样式 */
+.puppy-ear {
+  position: absolute;
+  width: 14px;
+  height: 16px;
+  background-color: inherit;
+  border-radius: 7px 7px 0 0;
+  top: -8px;
+}
+
+.puppy-ear-left {
+  left: 2px;
+  transform: rotate(-15deg);
+}
+
+.puppy-ear-right {
+  right: 2px;
+  transform: rotate(15deg);
+}
+
+/* 调整小狗眼睛样式 */
+.puppy-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 12px;
+}
+
+.puppy-eye-left {
+  left: 7px;
+}
+
+.puppy-eye-right {
+  right: 7px;
+}
+
+/* 调整小狗动画关键帧 */
+@keyframes leg-run {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-20deg);
+  }
+}
+
+@keyframes leg-run-back {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 修改HTML结构，确保正确的3D效果 */
+<template>
+  <div class="puppy-run-timer">
+    <div class="timer-container">
+      <div class="timer-display" :class="{'countdown-active': isCountdownActive}">
+        <div class="timer-flash" v-if="isCountdownActive"></div>
+        {{ formattedTime }}
+      </div>
+      
+      <div class="race-track" ref="trackRef">
+        <!-- 赛道背景 -->
+        <div class="track-background">
+          <div class="sky-gradient"></div>
+          <div class="grass-background"></div>
+          <div class="sun">
+            <div class="sun-ray" v-for="i in 12" :key="`sun-ray-${i}`" :style="{ transform: `rotate(${i * 30}deg)` }"></div>
+          </div>
+        </div>
+        
+        <!-- 3D赛道地面 -->
+        <div class="track-ground"></div>
+        
+        <!-- 赛道线 -->
+        <div class="track-lines">
+          <div class="track-line track-line-1"></div>
+          <div class="track-line track-line-2"></div>
+          <div class="track-line track-line-3"></div>
+        </div>
+        
+        <!-- 赛道标记 -->
+        <div class="distance-markers">
+          <div class="distance-marker marker-20">20%</div>
+          <div class="distance-marker marker-40">40%</div>
+          <div class="distance-marker marker-60">60%</div>
+          <div class="distance-marker marker-80">80%</div>
+          <div class="distance-marker marker-100">100%</div>
+        </div>
+        
+        <!-- 起跑线和终点线 -->
+        <div class="start-line"></div>
+        <div class="finish-line"></div>
+        
+        <!-- 小狗们 -->
+        <div class="puppies-container">
+          <!-- 主角小狗（棕色） -->
+          <div
+            ref="puppyRef"
+            :class="['puppy', 'puppy-brown', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 思考泡泡 -->
+            <div v-if="showThoughtBubble" class="thought-bubble">
+              {{ thoughtContent }}
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 白色小狗（AI对手） -->
+          <div
+            ref="puppyWhiteRef"
+            :class="['puppy', 'puppy-white', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 黑色小狗（AI对手） -->
+          <div
+            ref="puppyBlackRef"
+            :class="['puppy', 'puppy-black', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 斑点小狗（AI对手） -->
+          <div
+            ref="puppySpottedRef"
+            :class="['puppy', 'puppy-spotted', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+        </div>
+        
+        <!-- 骨头（目标） -->
+        <div class="bone" ref="boneRef">
+          <div class="bone-end bone-left"></div>
+          <div class="bone-middle"></div>
+          <div class="bone-end bone-right"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+/* 增加赛道地面，带有3D透视效果 */
+.track-ground {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(to bottom, #8FCB91, #78c27d);
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+  z-index: 5;
+}
+
+/* 赛道线，创造3D效果 */
+.track-lines {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+/* 赛道分隔线 */
+.track-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  left: 0;
+}
+
+.track-line-1 { bottom: 25%; }
+.track-line-2 { bottom: 50%; }
+.track-line-3 { bottom: 75%; }
+
+/* 赛道百分比标记 */
+.distance-markers {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+.distance-marker {
+  position: absolute;
+  bottom: 5px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  transform: translateX(-50%);
+}
+
+.marker-20 { left: 20%; }
+.marker-40 { left: 40%; }
+.marker-60 { left: 60%; }
+.marker-80 { left: 80%; }
+.marker-100 { left: 98%; }
+
+/* 起跑线，以3D方式放置 */
+.start-line {
+  position: absolute;
+  bottom: 0;
+  left: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #2196F3,
+    #2196F3 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(-10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 终点线，以3D方式放置 */
+.finish-line {
+  position: absolute;
+  bottom: 0;
+  right: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f44336,
+    #f44336 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 调整小狗整体样式 */
+.puppy {
+  position: absolute;
+  width: 50px;
+  height: 80px;
+  bottom: 20px;
+  transition: all 0.3s ease-out;
+  z-index: 20;
+}
+
+/* 调整小狗的初始位置，竖排且有间距 */
+.puppy-brown {
+  left: 5%;
+  bottom: 20px;
+  z-index: 24;
+}
+
+.puppy-white {
+  left: 5%;
+  bottom: 60px;
+  z-index: 23;
+}
+
+.puppy-black {
+  left: 5%;
+  bottom: 100px;
+  z-index: 22;
+}
+
+.puppy-spotted {
+  left: 5%;
+  bottom: 140px;
+  z-index: 21;
+}
+
+/* 小狗骨架基本结构 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 调整身体结构 */
+.puppy-trunk {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  background-color: inherit;
+  border-radius: 15px 15px 10px 10px;
+  top: 25px;
+  left: 10px;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+}
+
+.puppy-head {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-color: inherit;
+  border-radius: 50%;
+  top: 0;
+  left: 9px;
+  z-index: 10;
+  box-shadow: 2px 3px 5px rgba(0,0,0,0.2);
+}
+
+/* 修改动画与定位逻辑 */
+.puppies-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 更新跑步时的位置计算和3D视角 */
+@keyframes race-perspective {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 修改小狗的奔跑动画和路径，显示3D视角效果 */
+.puppy-running {
+  animation: race-perspective 0.4s infinite;
+}
+
+/* 增加小狗的阴影效果，增强3D感 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 15px;
+  width: 30px;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 80%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* 根据参考网站调整小狗耳朵样式 */
+.puppy-ear {
+  position: absolute;
+  width: 14px;
+  height: 16px;
+  background-color: inherit;
+  border-radius: 7px 7px 0 0;
+  top: -8px;
+}
+
+.puppy-ear-left {
+  left: 2px;
+  transform: rotate(-15deg);
+}
+
+.puppy-ear-right {
+  right: 2px;
+  transform: rotate(15deg);
+}
+
+/* 调整小狗眼睛样式 */
+.puppy-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 12px;
+}
+
+.puppy-eye-left {
+  left: 7px;
+}
+
+.puppy-eye-right {
+  right: 7px;
+}
+
+/* 调整小狗动画关键帧 */
+@keyframes leg-run {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-20deg);
+  }
+}
+
+@keyframes leg-run-back {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 修改HTML结构，确保正确的3D效果 */
+<template>
+  <div class="puppy-run-timer">
+    <div class="timer-container">
+      <div class="timer-display" :class="{'countdown-active': isCountdownActive}">
+        <div class="timer-flash" v-if="isCountdownActive"></div>
+        {{ formattedTime }}
+      </div>
+      
+      <div class="race-track" ref="trackRef">
+        <!-- 赛道背景 -->
+        <div class="track-background">
+          <div class="sky-gradient"></div>
+          <div class="grass-background"></div>
+          <div class="sun">
+            <div class="sun-ray" v-for="i in 12" :key="`sun-ray-${i}`" :style="{ transform: `rotate(${i * 30}deg)` }"></div>
+          </div>
+        </div>
+        
+        <!-- 3D赛道地面 -->
+        <div class="track-ground"></div>
+        
+        <!-- 赛道线 -->
+        <div class="track-lines">
+          <div class="track-line track-line-1"></div>
+          <div class="track-line track-line-2"></div>
+          <div class="track-line track-line-3"></div>
+        </div>
+        
+        <!-- 赛道标记 -->
+        <div class="distance-markers">
+          <div class="distance-marker marker-20">20%</div>
+          <div class="distance-marker marker-40">40%</div>
+          <div class="distance-marker marker-60">60%</div>
+          <div class="distance-marker marker-80">80%</div>
+          <div class="distance-marker marker-100">100%</div>
+        </div>
+        
+        <!-- 起跑线和终点线 -->
+        <div class="start-line"></div>
+        <div class="finish-line"></div>
+        
+        <!-- 小狗们 -->
+        <div class="puppies-container">
+          <!-- 主角小狗（棕色） -->
+          <div
+            ref="puppyRef"
+            :class="['puppy', 'puppy-brown', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 思考泡泡 -->
+            <div v-if="showThoughtBubble" class="thought-bubble">
+              {{ thoughtContent }}
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 白色小狗（AI对手） -->
+          <div
+            ref="puppyWhiteRef"
+            :class="['puppy', 'puppy-white', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 黑色小狗（AI对手） -->
+          <div
+            ref="puppyBlackRef"
+            :class="['puppy', 'puppy-black', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 斑点小狗（AI对手） -->
+          <div
+            ref="puppySpottedRef"
+            :class="['puppy', 'puppy-spotted', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+        </div>
+        
+        <!-- 骨头（目标） -->
+        <div class="bone" ref="boneRef">
+          <div class="bone-end bone-left"></div>
+          <div class="bone-middle"></div>
+          <div class="bone-end bone-right"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+/* 增加赛道地面，带有3D透视效果 */
+.track-ground {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(to bottom, #8FCB91, #78c27d);
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+  z-index: 5;
+}
+
+/* 赛道线，创造3D效果 */
+.track-lines {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+/* 赛道分隔线 */
+.track-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  left: 0;
+}
+
+.track-line-1 { bottom: 25%; }
+.track-line-2 { bottom: 50%; }
+.track-line-3 { bottom: 75%; }
+
+/* 赛道百分比标记 */
+.distance-markers {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+.distance-marker {
+  position: absolute;
+  bottom: 5px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  transform: translateX(-50%);
+}
+
+.marker-20 { left: 20%; }
+.marker-40 { left: 40%; }
+.marker-60 { left: 60%; }
+.marker-80 { left: 80%; }
+.marker-100 { left: 98%; }
+
+/* 起跑线，以3D方式放置 */
+.start-line {
+  position: absolute;
+  bottom: 0;
+  left: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #2196F3,
+    #2196F3 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(-10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 终点线，以3D方式放置 */
+.finish-line {
+  position: absolute;
+  bottom: 0;
+  right: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f44336,
+    #f44336 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 调整小狗整体样式 */
+.puppy {
+  position: absolute;
+  width: 50px;
+  height: 80px;
+  bottom: 20px;
+  transition: all 0.3s ease-out;
+  z-index: 20;
+}
+
+/* 调整小狗的初始位置，竖排且有间距 */
+.puppy-brown {
+  left: 5%;
+  bottom: 20px;
+  z-index: 24;
+}
+
+.puppy-white {
+  left: 5%;
+  bottom: 60px;
+  z-index: 23;
+}
+
+.puppy-black {
+  left: 5%;
+  bottom: 100px;
+  z-index: 22;
+}
+
+.puppy-spotted {
+  left: 5%;
+  bottom: 140px;
+  z-index: 21;
+}
+
+/* 小狗骨架基本结构 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 调整身体结构 */
+.puppy-trunk {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  background-color: inherit;
+  border-radius: 15px 15px 10px 10px;
+  top: 25px;
+  left: 10px;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+}
+
+.puppy-head {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-color: inherit;
+  border-radius: 50%;
+  top: 0;
+  left: 9px;
+  z-index: 10;
+  box-shadow: 2px 3px 5px rgba(0,0,0,0.2);
+}
+
+/* 修改动画与定位逻辑 */
+.puppies-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 更新跑步时的位置计算和3D视角 */
+@keyframes race-perspective {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 修改小狗的奔跑动画和路径，显示3D视角效果 */
+.puppy-running {
+  animation: race-perspective 0.4s infinite;
+}
+
+/* 增加小狗的阴影效果，增强3D感 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 15px;
+  width: 30px;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 80%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* 根据参考网站调整小狗耳朵样式 */
+.puppy-ear {
+  position: absolute;
+  width: 14px;
+  height: 16px;
+  background-color: inherit;
+  border-radius: 7px 7px 0 0;
+  top: -8px;
+}
+
+.puppy-ear-left {
+  left: 2px;
+  transform: rotate(-15deg);
+}
+
+.puppy-ear-right {
+  right: 2px;
+  transform: rotate(15deg);
+}
+
+/* 调整小狗眼睛样式 */
+.puppy-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 12px;
+}
+
+.puppy-eye-left {
+  left: 7px;
+}
+
+.puppy-eye-right {
+  right: 7px;
+}
+
+/* 调整小狗动画关键帧 */
+@keyframes leg-run {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-20deg);
+  }
+}
+
+@keyframes leg-run-back {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 修改HTML结构，确保正确的3D效果 */
+<template>
+  <div class="puppy-run-timer">
+    <div class="timer-container">
+      <div class="timer-display" :class="{'countdown-active': isCountdownActive}">
+        <div class="timer-flash" v-if="isCountdownActive"></div>
+        {{ formattedTime }}
+      </div>
+      
+      <div class="race-track" ref="trackRef">
+        <!-- 赛道背景 -->
+        <div class="track-background">
+          <div class="sky-gradient"></div>
+          <div class="grass-background"></div>
+          <div class="sun">
+            <div class="sun-ray" v-for="i in 12" :key="`sun-ray-${i}`" :style="{ transform: `rotate(${i * 30}deg)` }"></div>
+          </div>
+        </div>
+        
+        <!-- 3D赛道地面 -->
+        <div class="track-ground"></div>
+        
+        <!-- 赛道线 -->
+        <div class="track-lines">
+          <div class="track-line track-line-1"></div>
+          <div class="track-line track-line-2"></div>
+          <div class="track-line track-line-3"></div>
+        </div>
+        
+        <!-- 赛道标记 -->
+        <div class="distance-markers">
+          <div class="distance-marker marker-20">20%</div>
+          <div class="distance-marker marker-40">40%</div>
+          <div class="distance-marker marker-60">60%</div>
+          <div class="distance-marker marker-80">80%</div>
+          <div class="distance-marker marker-100">100%</div>
+        </div>
+        
+        <!-- 起跑线和终点线 -->
+        <div class="start-line"></div>
+        <div class="finish-line"></div>
+        
+        <!-- 小狗们 -->
+        <div class="puppies-container">
+          <!-- 主角小狗（棕色） -->
+          <div
+            ref="puppyRef"
+            :class="['puppy', 'puppy-brown', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 思考泡泡 -->
+            <div v-if="showThoughtBubble" class="thought-bubble">
+              {{ thoughtContent }}
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 白色小狗（AI对手） -->
+          <div
+            ref="puppyWhiteRef"
+            :class="['puppy', 'puppy-white', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 黑色小狗（AI对手） -->
+          <div
+            ref="puppyBlackRef"
+            :class="['puppy', 'puppy-black', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 斑点小狗（AI对手） -->
+          <div
+            ref="puppySpottedRef"
+            :class="['puppy', 'puppy-spotted', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+        </div>
+        
+        <!-- 骨头（目标） -->
+        <div class="bone" ref="boneRef">
+          <div class="bone-end bone-left"></div>
+          <div class="bone-middle"></div>
+          <div class="bone-end bone-right"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+/* 增加赛道地面，带有3D透视效果 */
+.track-ground {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(to bottom, #8FCB91, #78c27d);
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+  z-index: 5;
+}
+
+/* 赛道线，创造3D效果 */
+.track-lines {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+/* 赛道分隔线 */
+.track-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  left: 0;
+}
+
+.track-line-1 { bottom: 25%; }
+.track-line-2 { bottom: 50%; }
+.track-line-3 { bottom: 75%; }
+
+/* 赛道百分比标记 */
+.distance-markers {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+.distance-marker {
+  position: absolute;
+  bottom: 5px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  transform: translateX(-50%);
+}
+
+.marker-20 { left: 20%; }
+.marker-40 { left: 40%; }
+.marker-60 { left: 60%; }
+.marker-80 { left: 80%; }
+.marker-100 { left: 98%; }
+
+/* 起跑线，以3D方式放置 */
+.start-line {
+  position: absolute;
+  bottom: 0;
+  left: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #2196F3,
+    #2196F3 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(-10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 终点线，以3D方式放置 */
+.finish-line {
+  position: absolute;
+  bottom: 0;
+  right: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f44336,
+    #f44336 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 调整小狗整体样式 */
+.puppy {
+  position: absolute;
+  width: 50px;
+  height: 80px;
+  bottom: 20px;
+  transition: all 0.3s ease-out;
+  z-index: 20;
+}
+
+/* 调整小狗的初始位置，竖排且有间距 */
+.puppy-brown {
+  left: 5%;
+  bottom: 20px;
+  z-index: 24;
+}
+
+.puppy-white {
+  left: 5%;
+  bottom: 60px;
+  z-index: 23;
+}
+
+.puppy-black {
+  left: 5%;
+  bottom: 100px;
+  z-index: 22;
+}
+
+.puppy-spotted {
+  left: 5%;
+  bottom: 140px;
+  z-index: 21;
+}
+
+/* 小狗骨架基本结构 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 调整身体结构 */
+.puppy-trunk {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  background-color: inherit;
+  border-radius: 15px 15px 10px 10px;
+  top: 25px;
+  left: 10px;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+}
+
+.puppy-head {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-color: inherit;
+  border-radius: 50%;
+  top: 0;
+  left: 9px;
+  z-index: 10;
+  box-shadow: 2px 3px 5px rgba(0,0,0,0.2);
+}
+
+/* 修改动画与定位逻辑 */
+.puppies-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 更新跑步时的位置计算和3D视角 */
+@keyframes race-perspective {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 修改小狗的奔跑动画和路径，显示3D视角效果 */
+.puppy-running {
+  animation: race-perspective 0.4s infinite;
+}
+
+/* 增加小狗的阴影效果，增强3D感 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 15px;
+  width: 30px;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 80%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* 根据参考网站调整小狗耳朵样式 */
+.puppy-ear {
+  position: absolute;
+  width: 14px;
+  height: 16px;
+  background-color: inherit;
+  border-radius: 7px 7px 0 0;
+  top: -8px;
+}
+
+.puppy-ear-left {
+  left: 2px;
+  transform: rotate(-15deg);
+}
+
+.puppy-ear-right {
+  right: 2px;
+  transform: rotate(15deg);
+}
+
+/* 调整小狗眼睛样式 */
+.puppy-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 12px;
+}
+
+.puppy-eye-left {
+  left: 7px;
+}
+
+.puppy-eye-right {
+  right: 7px;
+}
+
+/* 调整小狗动画关键帧 */
+@keyframes leg-run {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+  transform: rotate(-20deg);
+  }
+}
+
+@keyframes leg-run-back {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+  transform: rotate(20deg);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 修改HTML结构，确保正确的3D效果 */
+<template>
+  <div class="puppy-run-timer">
+    <div class="timer-container">
+      <div class="timer-display" :class="{'countdown-active': isCountdownActive}">
+        <div class="timer-flash" v-if="isCountdownActive"></div>
+        {{ formattedTime }}
+      </div>
+      
+      <div class="race-track" ref="trackRef">
+        <!-- 赛道背景 -->
+        <div class="track-background">
+          <div class="sky-gradient"></div>
+          <div class="grass-background"></div>
+          <div class="sun">
+            <div class="sun-ray" v-for="i in 12" :key="`sun-ray-${i}`" :style="{ transform: `rotate(${i * 30}deg)` }"></div>
+          </div>
+        </div>
+        
+        <!-- 3D赛道地面 -->
+        <div class="track-ground"></div>
+        
+        <!-- 赛道线 -->
+        <div class="track-lines">
+          <div class="track-line track-line-1"></div>
+          <div class="track-line track-line-2"></div>
+          <div class="track-line track-line-3"></div>
+        </div>
+        
+        <!-- 赛道标记 -->
+        <div class="distance-markers">
+          <div class="distance-marker marker-20">20%</div>
+          <div class="distance-marker marker-40">40%</div>
+          <div class="distance-marker marker-60">60%</div>
+          <div class="distance-marker marker-80">80%</div>
+          <div class="distance-marker marker-100">100%</div>
+        </div>
+        
+        <!-- 起跑线和终点线 -->
+        <div class="start-line"></div>
+        <div class="finish-line"></div>
+        
+        <!-- 小狗们 -->
+        <div class="puppies-container">
+          <!-- 主角小狗（棕色） -->
+          <div
+            ref="puppyRef"
+            :class="['puppy', 'puppy-brown', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 思考泡泡 -->
+            <div v-if="showThoughtBubble" class="thought-bubble">
+              {{ thoughtContent }}
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 白色小狗（AI对手） -->
+          <div
+            ref="puppyWhiteRef"
+            :class="['puppy', 'puppy-white', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 黑色小狗（AI对手） -->
+          <div
+            ref="puppyBlackRef"
+            :class="['puppy', 'puppy-black', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 斑点小狗（AI对手） -->
+          <div
+            ref="puppySpottedRef"
+            :class="['puppy', 'puppy-spotted', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+        </div>
+        
+        <!-- 骨头（目标） -->
+        <div class="bone" ref="boneRef">
+          <div class="bone-end bone-left"></div>
+          <div class="bone-middle"></div>
+          <div class="bone-end bone-right"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+/* 增加赛道地面，带有3D透视效果 */
+.track-ground {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(to bottom, #8FCB91, #78c27d);
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+  z-index: 5;
+}
+
+/* 赛道线，创造3D效果 */
+.track-lines {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+/* 赛道分隔线 */
+.track-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  left: 0;
+}
+
+.track-line-1 { bottom: 25%; }
+.track-line-2 { bottom: 50%; }
+.track-line-3 { bottom: 75%; }
+
+/* 赛道百分比标记 */
+.distance-markers {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+.distance-marker {
+  position: absolute;
+  bottom: 5px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  transform: translateX(-50%);
+}
+
+.marker-20 { left: 20%; }
+.marker-40 { left: 40%; }
+.marker-60 { left: 60%; }
+.marker-80 { left: 80%; }
+.marker-100 { left: 98%; }
+
+/* 起跑线，以3D方式放置 */
+.start-line {
+  position: absolute;
+  bottom: 0;
+  left: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #2196F3,
+    #2196F3 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(-10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 终点线，以3D方式放置 */
+.finish-line {
+  position: absolute;
+  bottom: 0;
+  right: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f44336,
+    #f44336 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 调整小狗整体样式 */
+.puppy {
+  position: absolute;
+  width: 50px;
+  height: 80px;
+  bottom: 20px;
+  transition: all 0.3s ease-out;
+  z-index: 20;
+}
+
+/* 调整小狗的初始位置，竖排且有间距 */
+.puppy-brown {
+  left: 5%;
+  bottom: 20px;
+  z-index: 24;
+}
+
+.puppy-white {
+  left: 5%;
+  bottom: 60px;
+  z-index: 23;
+}
+
+.puppy-black {
+  left: 5%;
+  bottom: 100px;
+  z-index: 22;
+}
+
+.puppy-spotted {
+  left: 5%;
+  bottom: 140px;
+  z-index: 21;
+}
+
+/* 小狗骨架基本结构 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 调整身体结构 */
+.puppy-trunk {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  background-color: inherit;
+  border-radius: 15px 15px 10px 10px;
+  top: 25px;
+  left: 10px;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+}
+
+.puppy-head {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-color: inherit;
+  border-radius: 50%;
+  top: 0;
+  left: 9px;
+  z-index: 10;
+  box-shadow: 2px 3px 5px rgba(0,0,0,0.2);
+}
+
+/* 修改动画与定位逻辑 */
+.puppies-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 更新跑步时的位置计算和3D视角 */
+@keyframes race-perspective {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 修改小狗的奔跑动画和路径，显示3D视角效果 */
+.puppy-running {
+  animation: race-perspective 0.4s infinite;
+}
+
+/* 增加小狗的阴影效果，增强3D感 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 15px;
+  width: 30px;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 80%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* 根据参考网站调整小狗耳朵样式 */
+.puppy-ear {
+  position: absolute;
+  width: 14px;
+  height: 16px;
+  background-color: inherit;
+  border-radius: 7px 7px 0 0;
+  top: -8px;
+}
+
+.puppy-ear-left {
+  left: 2px;
+  transform: rotate(-15deg);
+}
+
+.puppy-ear-right {
+  right: 2px;
+  transform: rotate(15deg);
+}
+
+/* 调整小狗眼睛样式 */
+.puppy-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 12px;
+}
+
+.puppy-eye-left {
+  left: 7px;
+}
+
+.puppy-eye-right {
+  right: 7px;
+}
+
+/* 调整小狗动画关键帧 */
+@keyframes leg-run {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-20deg);
+  }
+}
+
+@keyframes leg-run-back {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 修改HTML结构，确保正确的3D效果 */
+<template>
+  <div class="puppy-run-timer">
+    <div class="timer-container">
+      <div class="timer-display" :class="{'countdown-active': isCountdownActive}">
+        <div class="timer-flash" v-if="isCountdownActive"></div>
+        {{ formattedTime }}
+      </div>
+      
+      <div class="race-track" ref="trackRef">
+        <!-- 赛道背景 -->
+        <div class="track-background">
+          <div class="sky-gradient"></div>
+          <div class="grass-background"></div>
+          <div class="sun">
+            <div class="sun-ray" v-for="i in 12" :key="`sun-ray-${i}`" :style="{ transform: `rotate(${i * 30}deg)` }"></div>
+          </div>
+        </div>
+        
+        <!-- 3D赛道地面 -->
+        <div class="track-ground"></div>
+        
+        <!-- 赛道线 -->
+        <div class="track-lines">
+          <div class="track-line track-line-1"></div>
+          <div class="track-line track-line-2"></div>
+          <div class="track-line track-line-3"></div>
+        </div>
+        
+        <!-- 赛道标记 -->
+        <div class="distance-markers">
+          <div class="distance-marker marker-20">20%</div>
+          <div class="distance-marker marker-40">40%</div>
+          <div class="distance-marker marker-60">60%</div>
+          <div class="distance-marker marker-80">80%</div>
+          <div class="distance-marker marker-100">100%</div>
+        </div>
+        
+        <!-- 起跑线和终点线 -->
+        <div class="start-line"></div>
+        <div class="finish-line"></div>
+        
+        <!-- 小狗们 -->
+        <div class="puppies-container">
+          <!-- 主角小狗（棕色） -->
+          <div
+            ref="puppyRef"
+            :class="['puppy', 'puppy-brown', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 思考泡泡 -->
+            <div v-if="showThoughtBubble" class="thought-bubble">
+              {{ thoughtContent }}
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 白色小狗（AI对手） -->
+          <div
+            ref="puppyWhiteRef"
+            :class="['puppy', 'puppy-white', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 黑色小狗（AI对手） -->
+          <div
+            ref="puppyBlackRef"
+            :class="['puppy', 'puppy-black', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 斑点小狗（AI对手） -->
+          <div
+            ref="puppySpottedRef"
+            :class="['puppy', 'puppy-spotted', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+        </div>
+        
+        <!-- 骨头（目标） -->
+        <div class="bone" ref="boneRef">
+          <div class="bone-end bone-left"></div>
+          <div class="bone-middle"></div>
+          <div class="bone-end bone-right"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+/* 增加赛道地面，带有3D透视效果 */
+.track-ground {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(to bottom, #8FCB91, #78c27d);
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+  z-index: 5;
+}
+
+/* 赛道线，创造3D效果 */
+.track-lines {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+/* 赛道分隔线 */
+.track-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  left: 0;
+}
+
+.track-line-1 { bottom: 25%; }
+.track-line-2 { bottom: 50%; }
+.track-line-3 { bottom: 75%; }
+
+/* 赛道百分比标记 */
+.distance-markers {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+.distance-marker {
+  position: absolute;
+  bottom: 5px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  transform: translateX(-50%);
+}
+
+.marker-20 { left: 20%; }
+.marker-40 { left: 40%; }
+.marker-60 { left: 60%; }
+.marker-80 { left: 80%; }
+.marker-100 { left: 98%; }
+
+/* 起跑线，以3D方式放置 */
+.start-line {
+  position: absolute;
+  bottom: 0;
+  left: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #2196F3,
+    #2196F3 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(-10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 终点线，以3D方式放置 */
+.finish-line {
+  position: absolute;
+  bottom: 0;
+  right: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f44336,
+    #f44336 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 调整小狗整体样式 */
+.puppy {
+  position: absolute;
+  width: 50px;
+  height: 80px;
+  bottom: 20px;
+  transition: all 0.3s ease-out;
+  z-index: 20;
+}
+
+/* 调整小狗的初始位置，竖排且有间距 */
+.puppy-brown {
+  left: 5%;
+  bottom: 20px;
+  z-index: 24;
+}
+
+.puppy-white {
+  left: 5%;
+  bottom: 60px;
+  z-index: 23;
+}
+
+.puppy-black {
+  left: 5%;
+  bottom: 100px;
+  z-index: 22;
+}
+
+.puppy-spotted {
+  left: 5%;
+  bottom: 140px;
+  z-index: 21;
+}
+
+/* 小狗骨架基本结构 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 调整身体结构 */
+.puppy-trunk {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  background-color: inherit;
+  border-radius: 15px 15px 10px 10px;
+  top: 25px;
+  left: 10px;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+}
+
+.puppy-head {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-color: inherit;
+  border-radius: 50%;
+  top: 0;
+  left: 9px;
+  z-index: 10;
+  box-shadow: 2px 3px 5px rgba(0,0,0,0.2);
+}
+
+/* 修改动画与定位逻辑 */
+.puppies-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 更新跑步时的位置计算和3D视角 */
+@keyframes race-perspective {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 修改小狗的奔跑动画和路径，显示3D视角效果 */
+.puppy-running {
+  animation: race-perspective 0.4s infinite;
+}
+
+/* 增加小狗的阴影效果，增强3D感 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 15px;
+  width: 30px;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 80%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* 根据参考网站调整小狗耳朵样式 */
+.puppy-ear {
+  position: absolute;
+  width: 14px;
+  height: 16px;
+  background-color: inherit;
+  border-radius: 7px 7px 0 0;
+  top: -8px;
+}
+
+.puppy-ear-left {
+  left: 2px;
+  transform: rotate(-15deg);
+}
+
+.puppy-ear-right {
+  right: 2px;
+  transform: rotate(15deg);
+}
+
+/* 调整小狗眼睛样式 */
+.puppy-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 12px;
+}
+
+.puppy-eye-left {
+  left: 7px;
+}
+
+.puppy-eye-right {
+  right: 7px;
+}
+
+/* 调整小狗动画关键帧 */
+@keyframes leg-run {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-20deg);
+  }
+}
+
+@keyframes leg-run-back {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 修改HTML结构，确保正确的3D效果 */
+<template>
+  <div class="puppy-run-timer">
+    <div class="timer-container">
+      <div class="timer-display" :class="{'countdown-active': isCountdownActive}">
+        <div class="timer-flash" v-if="isCountdownActive"></div>
+        {{ formattedTime }}
+      </div>
+      
+      <div class="race-track" ref="trackRef">
+        <!-- 赛道背景 -->
+        <div class="track-background">
+          <div class="sky-gradient"></div>
+          <div class="grass-background"></div>
+          <div class="sun">
+            <div class="sun-ray" v-for="i in 12" :key="`sun-ray-${i}`" :style="{ transform: `rotate(${i * 30}deg)` }"></div>
+          </div>
+        </div>
+        
+        <!-- 3D赛道地面 -->
+        <div class="track-ground"></div>
+        
+        <!-- 赛道线 -->
+        <div class="track-lines">
+          <div class="track-line track-line-1"></div>
+          <div class="track-line track-line-2"></div>
+          <div class="track-line track-line-3"></div>
+        </div>
+        
+        <!-- 赛道标记 -->
+        <div class="distance-markers">
+          <div class="distance-marker marker-20">20%</div>
+          <div class="distance-marker marker-40">40%</div>
+          <div class="distance-marker marker-60">60%</div>
+          <div class="distance-marker marker-80">80%</div>
+          <div class="distance-marker marker-100">100%</div>
+        </div>
+        
+        <!-- 起跑线和终点线 -->
+        <div class="start-line"></div>
+        <div class="finish-line"></div>
+        
+        <!-- 小狗们 -->
+        <div class="puppies-container">
+          <!-- 主角小狗（棕色） -->
+          <div
+            ref="puppyRef"
+            :class="['puppy', 'puppy-brown', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 思考泡泡 -->
+            <div v-if="showThoughtBubble" class="thought-bubble">
+              {{ thoughtContent }}
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 白色小狗（AI对手） -->
+          <div
+            ref="puppyWhiteRef"
+            :class="['puppy', 'puppy-white', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 黑色小狗（AI对手） -->
+          <div
+            ref="puppyBlackRef"
+            :class="['puppy', 'puppy-black', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 斑点小狗（AI对手） -->
+          <div
+            ref="puppySpottedRef"
+            :class="['puppy', 'puppy-spotted', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+        </div>
+        
+        <!-- 骨头（目标） -->
+        <div class="bone" ref="boneRef">
+          <div class="bone-end bone-left"></div>
+          <div class="bone-middle"></div>
+          <div class="bone-end bone-right"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+/* 增加赛道地面，带有3D透视效果 */
+.track-ground {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(to bottom, #8FCB91, #78c27d);
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+  z-index: 5;
+}
+
+/* 赛道线，创造3D效果 */
+.track-lines {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+/* 赛道分隔线 */
+.track-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  left: 0;
+}
+
+.track-line-1 { bottom: 25%; }
+.track-line-2 { bottom: 50%; }
+.track-line-3 { bottom: 75%; }
+
+/* 赛道百分比标记 */
+.distance-markers {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+.distance-marker {
+  position: absolute;
+  bottom: 5px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  transform: translateX(-50%);
+}
+
+.marker-20 { left: 20%; }
+.marker-40 { left: 40%; }
+.marker-60 { left: 60%; }
+.marker-80 { left: 80%; }
+.marker-100 { left: 98%; }
+
+/* 起跑线，以3D方式放置 */
+.start-line {
+  position: absolute;
+  bottom: 0;
+  left: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #2196F3,
+    #2196F3 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(-10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 终点线，以3D方式放置 */
+.finish-line {
+  position: absolute;
+  bottom: 0;
+  right: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f44336,
+    #f44336 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 调整小狗整体样式 */
+.puppy {
+  position: absolute;
+  width: 50px;
+  height: 80px;
+  bottom: 20px;
+  transition: all 0.3s ease-out;
+  z-index: 20;
+}
+
+/* 调整小狗的初始位置，竖排且有间距 */
+.puppy-brown {
+  left: 5%;
+  bottom: 20px;
+  z-index: 24;
+}
+
+.puppy-white {
+  left: 5%;
+  bottom: 60px;
+  z-index: 23;
+}
+
+.puppy-black {
+  left: 5%;
+  bottom: 100px;
+  z-index: 22;
+}
+
+.puppy-spotted {
+  left: 5%;
+  bottom: 140px;
+  z-index: 21;
+}
+
+/* 小狗骨架基本结构 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 调整身体结构 */
+.puppy-trunk {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  background-color: inherit;
+  border-radius: 15px 15px 10px 10px;
+  top: 25px;
+  left: 10px;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+}
+
+.puppy-head {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-color: inherit;
+  border-radius: 50%;
+  top: 0;
+  left: 9px;
+  z-index: 10;
+  box-shadow: 2px 3px 5px rgba(0,0,0,0.2);
+}
+
+/* 修改动画与定位逻辑 */
+.puppies-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 更新跑步时的位置计算和3D视角 */
+@keyframes race-perspective {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 修改小狗的奔跑动画和路径，显示3D视角效果 */
+.puppy-running {
+  animation: race-perspective 0.4s infinite;
+}
+
+/* 增加小狗的阴影效果，增强3D感 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 15px;
+  width: 30px;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 80%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* 根据参考网站调整小狗耳朵样式 */
+.puppy-ear {
+  position: absolute;
+  width: 14px;
+  height: 16px;
+  background-color: inherit;
+  border-radius: 7px 7px 0 0;
+  top: -8px;
+}
+
+.puppy-ear-left {
+  left: 2px;
+  transform: rotate(-15deg);
+}
+
+.puppy-ear-right {
+  right: 2px;
+  transform: rotate(15deg);
+}
+
+/* 调整小狗眼睛样式 */
+.puppy-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 12px;
+}
+
+.puppy-eye-left {
+  left: 7px;
+}
+
+.puppy-eye-right {
+  right: 7px;
+}
+
+/* 调整小狗动画关键帧 */
+@keyframes leg-run {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-20deg);
+  }
+}
+
+@keyframes leg-run-back {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 修改HTML结构，确保正确的3D效果 */
+<template>
+  <div class="puppy-run-timer">
+    <div class="timer-container">
+      <div class="timer-display" :class="{'countdown-active': isCountdownActive}">
+        <div class="timer-flash" v-if="isCountdownActive"></div>
+        {{ formattedTime }}
+      </div>
+      
+      <div class="race-track" ref="trackRef">
+        <!-- 赛道背景 -->
+        <div class="track-background">
+          <div class="sky-gradient"></div>
+          <div class="grass-background"></div>
+          <div class="sun">
+            <div class="sun-ray" v-for="i in 12" :key="`sun-ray-${i}`" :style="{ transform: `rotate(${i * 30}deg)` }"></div>
+          </div>
+        </div>
+        
+        <!-- 3D赛道地面 -->
+        <div class="track-ground"></div>
+        
+        <!-- 赛道线 -->
+        <div class="track-lines">
+          <div class="track-line track-line-1"></div>
+          <div class="track-line track-line-2"></div>
+          <div class="track-line track-line-3"></div>
+        </div>
+        
+        <!-- 赛道标记 -->
+        <div class="distance-markers">
+          <div class="distance-marker marker-20">20%</div>
+          <div class="distance-marker marker-40">40%</div>
+          <div class="distance-marker marker-60">60%</div>
+          <div class="distance-marker marker-80">80%</div>
+          <div class="distance-marker marker-100">100%</div>
+        </div>
+        
+        <!-- 起跑线和终点线 -->
+        <div class="start-line"></div>
+        <div class="finish-line"></div>
+        
+        <!-- 小狗们 -->
+        <div class="puppies-container">
+          <!-- 主角小狗（棕色） -->
+          <div
+            ref="puppyRef"
+            :class="['puppy', 'puppy-brown', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 思考泡泡 -->
+            <div v-if="showThoughtBubble" class="thought-bubble">
+              {{ thoughtContent }}
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 白色小狗（AI对手） -->
+          <div
+            ref="puppyWhiteRef"
+            :class="['puppy', 'puppy-white', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 黑色小狗（AI对手） -->
+          <div
+            ref="puppyBlackRef"
+            :class="['puppy', 'puppy-black', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 斑点小狗（AI对手） -->
+          <div
+            ref="puppySpottedRef"
+            :class="['puppy', 'puppy-spotted', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+        </div>
+        
+        <!-- 骨头（目标） -->
+        <div class="bone" ref="boneRef">
+          <div class="bone-end bone-left"></div>
+          <div class="bone-middle"></div>
+          <div class="bone-end bone-right"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+/* 增加赛道地面，带有3D透视效果 */
+.track-ground {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(to bottom, #8FCB91, #78c27d);
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+  z-index: 5;
+}
+
+/* 赛道线，创造3D效果 */
+.track-lines {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+/* 赛道分隔线 */
+.track-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(255, 255, 255, 0.5);
+  left: 0;
+}
+
+.track-line-1 { bottom: 25%; }
+.track-line-2 { bottom: 50%; }
+.track-line-3 { bottom: 75%; }
+
+/* 赛道百分比标记 */
+.distance-markers {
+  position: absolute;
+  width: 100%;
+  height: 200px;
+  bottom: 0;
+  left: 0;
+  z-index: 6;
+  transform: rotateX(30deg);
+  transform-origin: bottom;
+}
+
+.distance-marker {
+  position: absolute;
+  bottom: 5px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+  transform: translateX(-50%);
+}
+
+.marker-20 { left: 20%; }
+.marker-40 { left: 40%; }
+.marker-60 { left: 60%; }
+.marker-80 { left: 80%; }
+.marker-100 { left: 98%; }
+
+/* 起跑线，以3D方式放置 */
+.start-line {
+  position: absolute;
+  bottom: 0;
+  left: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #2196F3,
+    #2196F3 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(-10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 终点线，以3D方式放置 */
+.finish-line {
+  position: absolute;
+  bottom: 0;
+  right: 3%;
+  width: 15px;
+  height: 210px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f44336,
+    #f44336 10px,
+    white 10px,
+    white 20px
+  );
+  transform: rotateX(30deg) rotateY(10deg);
+  transform-origin: bottom;
+  z-index: 7;
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 调整小狗整体样式 */
+.puppy {
+  position: absolute;
+  width: 50px;
+  height: 80px;
+  bottom: 20px;
+  transition: all 0.3s ease-out;
+  z-index: 20;
+}
+
+/* 调整小狗的初始位置，竖排且有间距 */
+.puppy-brown {
+  left: 5%;
+  bottom: 20px;
+  z-index: 24;
+}
+
+.puppy-white {
+  left: 5%;
+  bottom: 60px;
+  z-index: 23;
+}
+
+.puppy-black {
+  left: 5%;
+  bottom: 100px;
+  z-index: 22;
+}
+
+.puppy-spotted {
+  left: 5%;
+  bottom: 140px;
+  z-index: 21;
+}
+
+/* 小狗骨架基本结构 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 调整身体结构 */
+.puppy-trunk {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  background-color: inherit;
+  border-radius: 15px 15px 10px 10px;
+  top: 25px;
+  left: 10px;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+}
+
+.puppy-head {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-color: inherit;
+  border-radius: 50%;
+  top: 0;
+  left: 9px;
+  z-index: 10;
+  box-shadow: 2px 3px 5px rgba(0,0,0,0.2);
+}
+
+/* 修改动画与定位逻辑 */
+.puppies-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* 更新跑步时的位置计算和3D视角 */
+@keyframes race-perspective {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* 修改小狗的奔跑动画和路径，显示3D视角效果 */
+.puppy-running {
+  animation: race-perspective 0.4s infinite;
+}
+
+/* 增加小狗的阴影效果，增强3D感 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 15px;
+  width: 30px;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 80%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* 根据参考网站调整小狗耳朵样式 */
+.puppy-ear {
+  position: absolute;
+  width: 14px;
+  height: 16px;
+  background-color: inherit;
+  border-radius: 7px 7px 0 0;
+  top: -8px;
+}
+
+.puppy-ear-left {
+  left: 2px;
+  transform: rotate(-15deg);
+}
+
+.puppy-ear-right {
+  right: 2px;
+  transform: rotate(15deg);
+}
+
+/* 调整小狗眼睛样式 */
+.puppy-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 12px;
+}
+
+.puppy-eye-left {
+  left: 7px;
+}
+
+.puppy-eye-right {
+  right: 7px;
+}
+
+/* 调整小狗动画关键帧 */
+@keyframes leg-run {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-20deg);
+  }
+}
+
+@keyframes leg-run-back {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 修改HTML结构，确保正确的3D效果 */
+<template>
+  <div class="puppy-run-timer">
+    <div class="timer-container">
+      <div class="timer-display" :class="{'countdown-active': isCountdownActive}">
+        <div class="timer-flash" v-if="isCountdownActive"></div>
+        {{ formattedTime }}
+      </div>
+      
+      <div class="race-track" ref="trackRef">
+        <!-- 赛道背景 -->
+        <div class="track-background">
+          <div class="sky-gradient"></div>
+          <div class="grass-background"></div>
+          <div class="sun">
+            <div class="sun-ray" v-for="i in 12" :key="`sun-ray-${i}`" :style="{ transform: `rotate(${i * 30}deg)` }"></div>
+          </div>
+        </div>
+        
+        <!-- 3D赛道地面 -->
+        <div class="track-ground"></div>
+        
+        <!-- 赛道线 -->
+        <div class="track-lines">
+          <div class="track-line track-line-1"></div>
+          <div class="track-line track-line-2"></div>
+          <div class="track-line track-line-3"></div>
+        </div>
+        
+        <!-- 赛道标记 -->
+        <div class="distance-markers">
+          <div class="distance-marker marker-20">20%</div>
+          <div class="distance-marker marker-40">40%</div>
+          <div class="distance-marker marker-60">60%</div>
+          <div class="distance-marker marker-80">80%</div>
+          <div class="distance-marker marker-100">100%</div>
+        </div>
+        
+        <!-- 起跑线和终点线 -->
+        <div class="start-line"></div>
+        <div class="finish-line"></div>
+        
+        <!-- 小狗们 -->
+        <div class="puppies-container">
+          <!-- 主角小狗（棕色） -->
+          <div
+            ref="puppyRef"
+            :class="['puppy', 'puppy-brown', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 思考泡泡 -->
+            <div v-if="showThoughtBubble" class="thought-bubble">
+              {{ thoughtContent }}
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 白色小狗（AI对手） -->
+          <div
+            ref="puppyWhiteRef"
+            :class="['puppy', 'puppy-white', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 跑步时的灰尘效果 -->
+            <div v-if="props.isRunning" class="dust-cloud"></div>
+          </div>
+          
+          <!-- 黑色小狗（AI对手） -->
+          <div
+            ref="puppyBlackRef"
+            :class="['puppy', 'puppy-black', { 'puppy-running': props.isRunning, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished }]"
+          >
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+<template>
+  <div class="puppy-run-timer">
+    <div class="timer-container">
+      <div class="timer-display" :class="{'countdown-active': isCountdownActive}">
+        <div class="timer-flash" v-if="isCountdownActive"></div>
+        {{ formattedTime }}
+      </div>
+      
+      <div class="race-track" ref="trackRef">
+        <!-- 赛道背景 -->
+        <div class="track-background">
+          <div class="sky-gradient"></div>
+          <div class="grass-background"></div>
+          <div class="sun">
+            <div class="sun-ray" v-for="i in 12" :key="`sun-ray-${i}`" :style="{ transform: `rotate(${i * 30}deg)` }"></div>
+          </div>
+        </div>
+        
+        <!-- 赛道起点线 -->
+        <div class="start-line"></div>
+        
+        <!-- 赛道装饰物 -->
+        <div class="track-decorations">
+          <div class="bush bush-1"></div>
+          <div class="bush bush-2"></div>
+          <div class="bush bush-3"></div>
+          
+          <div class="tree tree-1">
+            <div class="tree-trunk"></div>
+            <div class="tree-top"></div>
+          </div>
+          
+          <div class="tree tree-2">
+            <div class="tree-trunk"></div>
+            <div class="tree-top"></div>
+          </div>
+        </div>
+        
+        <!-- 赛道附加背景效果 -->
+        <div class="race-track-enhancements">
+          <!-- 移动的云彩效果 -->
+          <div class="moving-clouds">
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+            <div class="cloud cloud-3"></div>
+          </div>
+          
+          <!-- 移动的草丛 -->
+          <div class="grass-tufts">
+            <div v-for="i in 8" :key="`grass-tuft-${i}`" 
+                 class="grass-tuft" 
+                 :style="{left: `${i * 12}%`, animationDelay: `${i * 0.2}s`}">
+            </div>
+          </div>
+          
+          <!-- 距离标记 -->
+          <div class="distance-markers">
+            <div v-for="i in 5" :key="`marker-${i}`" 
+                 class="distance-marker"
+                 :style="{left: `${i * 20}%`}">
+              {{ i * 20 }}%
+            </div>
+          </div>
+        </div>
+        
+        <!-- 里程碑骨头 -->
+        <div class="milestone-bones">
+          <div class="milestone-bone" v-for="mile in [0.25, 0.5, 0.75]" :key="mile" 
+               :style="{left: `${mile * 100}%`}" 
+               :class="{'collected': progress/100 >= mile}">
+            <div class="mini-bone"></div>
+            <div class="milestone-label">{{Math.round(mile * 100)}}%</div>
+          </div>
+        </div>
+
+        <!-- 添加场景深度层 -->
+        <div class="scene-depth">
+          <!-- 远处的树和山 -->
+          <div class="distant-mountains"></div>
+          <div class="distant-trees"></div>
+        </div>
+        
+        <!-- 小狗们 -->
+        <div class="puppies-container">
+          <!-- 主角小狗（棕色） -->
+          <div class="puppy puppy-brown" ref="puppyRef" :class="{'puppy-running': props.isRunning && !props.isFinished, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished}">
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+                <div class="puppy-tongue" v-if="props.isRunning"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            
+            <!-- 思考泡泡 -->
+            <div class="thought-bubble" v-if="showThoughtBubble">
+              {{ thoughtContent }}
+            </div>
+            
+            <!-- 奔跑效果 -->
+            <div class="dust-cloud" v-if="props.isRunning && !props.isFinished"></div>
+          </div>
+          
+          <!-- 白色小狗（AI对手） -->
+          <div class="puppy puppy-white" :class="{'puppy-running': props.isRunning && !props.isFinished, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished}" ref="puppyWhiteRef">
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+                <div class="puppy-tongue" v-if="props.isRunning"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            <!-- 奔跑效果 -->
+            <div class="dust-cloud" v-if="props.isRunning && !props.isFinished"></div>
+          </div>
+          
+          <!-- 黑色小狗（AI对手） -->
+          <div class="puppy puppy-black" :class="{'puppy-running': props.isRunning && !props.isFinished, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished}" ref="puppyBlackRef">
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+                <div class="puppy-tongue" v-if="props.isRunning"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            <!-- 奔跑效果 -->
+            <div class="dust-cloud" v-if="props.isRunning && !props.isFinished"></div>
+          </div>
+          
+          <!-- 斑点小狗（AI对手） -->
+          <div class="puppy puppy-spotted" :class="{'puppy-running': props.isRunning && !props.isFinished, 'puppy-idle': !props.isRunning, 'puppy-finished': props.isFinished}" ref="puppySpottedRef">
+            <div class="puppy-body">
+              <div class="puppy-head">
+                <div class="puppy-ear puppy-ear-left"></div>
+                <div class="puppy-ear puppy-ear-right"></div>
+                <div class="puppy-eye puppy-eye-left"></div>
+                <div class="puppy-eye puppy-eye-right"></div>
+                <div class="puppy-nose"></div>
+                <div class="puppy-mouth"></div>
+                <div class="puppy-tongue" v-if="props.isRunning"></div>
+              </div>
+              <div class="puppy-trunk"></div>
+              <div class="puppy-legs">
+                <div class="puppy-leg-front"></div>
+                <div class="puppy-leg-back"></div>
+              </div>
+              <div class="puppy-tail"></div>
+            </div>
+            <!-- 奔跑效果 -->
+            <div class="dust-cloud" v-if="props.isRunning && !props.isFinished"></div>
+          </div>
+        </div>
+        
+        <!-- 终点线和奖励 -->
+        <div class="finish-line" :class="{'finish-line-active': props.isFinished}">
+          <div class="finish-flag">
+            <div class="flag-part"></div>
+            <div class="flag-pole"></div>
+          </div>
+        </div>
+        
+        <!-- 奖励 - 骨头和奖杯 -->
+        <div class="reward" v-if="props.isFinished || props.progress >= 95">
+          <div class="bone"></div>
+          <div class="trophy">
+            <div class="trophy-cup"></div>
+            <div class="trophy-handles">
+              <div class="trophy-handle trophy-handle-left"></div>
+              <div class="trophy-handle trophy-handle-right"></div>
+            </div>
+            <div class="trophy-base"></div>
+          </div>
+        </div>
+        
+        <!-- 环境细节 -->
+        <div class="environment-detail">
+          <div class="light-rays"></div>
+        </div>
+        
+        <!-- 控制按钮增强 -->
+        <div class="control-buttons">
+          <button 
+            class="control-button" 
+            :class="{'pulse-button': !props.isRunning && !props.isFinished}"
+            @click="toggleTimer"
+            :disabled="props.isFinished"
+          >
+            <i :class="props.isRunning ? 'fas fa-pause' : 'fas fa-play'"></i>
+            {{ props.isRunning ? '暂停' : '开始' }}
+          </button>
+          
+          <button 
+            class="control-button reset-button" 
+            @click="resetTimer"
+            :class="{'shake-button': props.isFinished}"
+          >
+            <i class="fas fa-redo-alt"></i>
+            重置
+          </button>
+          
+          <button 
+            class="control-button sound-button" 
+            @click="toggleSound"
+          >
+            <i :class="soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute'"></i>
+            {{ soundEnabled ? '开' : '关' }}
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 音效 -->
+    <audio ref="startSoundRef" src="https://assets.mixkit.co/sfx/preview/mixkit-dog-barking-twice-1.mp3" preload="auto"></audio>
+    <audio ref="runningSoundRef" src="https://assets.mixkit.co/sfx/preview/mixkit-small-dog-barking-2188.mp3" preload="auto" loop></audio>
+    <audio ref="finishSoundRef" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" preload="auto"></audio>
+    <audio ref="collectSoundRef" src="https://assets.mixkit.co/sfx/preview/mixkit-bonus-earned-in-video-game-2064.mp3" preload="auto"></audio>
+  </div>
+</template> 
+
+<script setup>
+import { ref, computed, watch, onMounted } from 'vue';
+import gsap from 'gsap';
+import { useTimerStore } from '../../store/timerStore';
+import { formatTime } from '../../utils/timerUtils';
+
+const props = defineProps({
+  time: {
+    type: Number,
+    required: true
+  },
+  progress: {
+    type: Number,
+    required: true
+  },
+  isRunning: {
+    type: Boolean,
+    required: true
+  },
+  isFinished: {
+    type: Boolean,
+    required: true
+  }
+});
+
+const emit = defineEmits(['timer-start', 'timer-pause', 'timer-reset', 'timer-end']);
+
+// 计时器状态
+const puppyPosition = computed(() => props.progress);
+const puppyRef = ref(null);
+const trackRef = ref(null);
+const collectedMilestones = ref([]);
+const showThoughtBubble = ref(false);
+const thoughtContent = ref('');
+const celebrationDone = ref(false);
+
+// 计算总时间（秒）
+const totalSeconds = computed(() => Math.floor(props.time));
+
+// 计算分钟和秒钟
+const minutes = computed(() => Math.floor(totalSeconds.value / 60));
+const seconds = computed(() => totalSeconds.value % 60);
+
+// 格式化时间显示
+const formattedTime = computed(() => {
+  return formatTime(minutes.value, seconds.value);
+});
+
+const puppyWhiteRef = ref(null);
+const puppyBlackRef = ref(null);
+const puppySpottedRef = ref(null);
+const soundEnabled = ref(true);
+const startSoundRef = ref(null);
+const runningSoundRef = ref(null);
+const finishSoundRef = ref(null);
+const collectSoundRef = ref(null);
+
+// 声明倒计时状态
+const isCountdownActive = ref(false);
+
+// AI小狗状态
+const aiPuppiesInitialized = ref(false);
+
+// 监听计时器状态变化
+watch(() => props.isRunning, (newVal, oldVal) => {
+  console.log('isRunning 变化:', newVal, oldVal);
+  if (newVal && !oldVal) {
+    // 计时器启动
+    console.log('计时器启动，当前进度:', props.progress);
+    
+    // 确保所有小狗显示在起点
+    if (puppyRef.value) puppyRef.value.style.left = '10px';
+    if (puppyWhiteRef.value) puppyWhiteRef.value.style.left = '10px';
+    if (puppyBlackRef.value) puppyBlackRef.value.style.left = '10px';
+    if (puppySpottedRef.value) puppySpottedRef.value.style.left = '10px';
+    
+    gsap.to(puppyRef.value, {
+      scale: 1.05,
+      duration: 0.2,
+      yoyo: true,
+      repeat: 1
+    });
+    
+    // 播放开始音效
+    if (soundEnabled.value && startSoundRef.value) {
+      startSoundRef.value.play().catch(err => {
+        console.error('无法播放开始声音:', err);
+      });
+      
+      setTimeout(() => {
+        if (runningSoundRef.value) {
+          runningSoundRef.value.play().catch(err => {
+            console.error('无法播放奔跑声音:', err);
+          });
+        }
+      }, 1000);
+    }
+    
+    // 立即执行一次位置更新
+    updatePuppyPosition();
+    
+    // 初始化AI小狗
+    initAIPuppies();
+  } else if (!newVal && oldVal) {
+    // 计时器暂停
+    console.log('计时器暂停');
+    gsap.to(puppyRef.value, {
+      scale: 1,
+      duration: 0.2
+    });
+    
+    // 暂停奔跑音效
+    if (runningSoundRef.value) {
+      runningSoundRef.value.pause();
+    }
+  }
+});
+
+// 监听计时结束
+watch(() => props.isFinished, (newVal) => {
+  if (newVal) {
+    celebrateFinish();
+    // 停止奔跑音效，播放完成音效
+    runningSoundRef.value.pause();
+    if (soundEnabled.value) {
+      finishSoundRef.value.play();
+    }
+  }
+});
+
+// 监听秒数变化，添加倒计时特效
+watch(() => seconds.value, (newVal) => {
+  // 当剩余时间不到10秒时，激活倒计时特效
+  if (props.isRunning && !props.isFinished && totalSeconds.value <= 10) {
+    isCountdownActive.value = true;
+    
+    // 播放滴答声
+    if (soundEnabled.value && newVal > 0) {
+      playTickSound();
+    }
+  } else {
+    isCountdownActive.value = false;
+  }
+});
+
+// 播放倒计时滴答声
+const playTickSound = () => {
+  if (!soundEnabled.value) return;
+  
+  const tickSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-clock-timer-ticking-1056.mp3');
+  tickSound.volume = 0.3;
+  tickSound.play();
+  
+  // 设定声音自动停止
+  setTimeout(() => {
+    tickSound.pause();
+    tickSound.remove();
+  }, 1000);
+};
+
+// 增强celebrateFinish方法
+const celebrateFinish = () => {
+  // 增强完成动画效果
+  const puppy = puppyRef.value;
+  if (!puppy || celebrationDone.value) return;
+  
+  celebrationDone.value = true;
+  
+  // 触发完成事件
+  emit('timer-end');
+  
+  // 创建闪光特效
+  createFinishFlash();
+  
+  // 显示排名效果
+  showRankings();
+  
+  // 小狗跳跃庆祝 - 增强3D效果
+  gsap.to(puppy, {
+    y: '-30px',
+    rotateX: '20deg',
+    duration: 0.3,
+    repeat: 3,
+    yoyo: true,
+    ease: "power2.out",
+    onComplete: () => {
+      // 小狗兴奋旋转 - 3D效果
+      gsap.to(puppy, {
+        rotationY: 360,
+        duration: 0.8,
+        ease: "power1.inOut",
+        onComplete: () => {
+          // 恢复原位并显示思考泡泡
+          gsap.to(puppy, {
+            rotation: 0,
+            rotationY: 0,
+            rotateX: 0,
+            duration: 0.5,
+            onComplete: () => {
+              showThoughtBubble.value = true;
+              thoughtContent.value = '太棒了！我做到了！';
+              setTimeout(() => {
+                showThoughtBubble.value = false;
+              }, 3000);
+            }
+          });
+        }
+      });
+    }
+  });
+
+  // 创建更多庆祝效果
+  createConfetti();
+  
+  // 玩家小狗胜利音效
+  if (soundEnabled.value && finishSoundRef.value) {
+    finishSoundRef.value.play().catch(err => {
+      console.error('无法播放完成音效:', err);
+    });
+  }
+};
+
+// 显示排名效果
+const showRankings = () => {
+  // 获取所有小狗的位置
+  const puppyPositions = [
+    { ref: puppyRef.value, name: '主角小狗', position: parseFloat(puppyRef.value.style.left) },
+    { ref: puppyWhiteRef.value, name: '白色小狗', position: parseFloat(puppyWhiteRef.value.style.left) },
+    { ref: puppyBlackRef.value, name: '黑色小狗', position: parseFloat(puppyBlackRef.value.style.left) },
+    { ref: puppySpottedRef.value, name: '斑点小狗', position: parseFloat(puppySpottedRef.value.style.left) }
+  ];
+  
+  // 根据位置排序
+  puppyPositions.sort((a, b) => b.position - a.position);
+  
+  // 为前三名创建奖牌
+  for (let i = 0; i < 3; i++) {
+    if (i >= puppyPositions.length) break;
+    
+    const puppy = puppyPositions[i].ref;
+    const medal = document.createElement('div');
+    medal.className = `medal medal-${i+1}`;
+    medal.innerHTML = `${i+1}`;
+    
+    // 将奖牌添加到小狗上
+    puppy.appendChild(medal);
+    
+    // 奖牌动画
+    gsap.from(medal, {
+      scale: 0,
+      opacity: 0,
+      duration: 0.5,
+      delay: i * 0.2,
+      ease: "back.out(1.7)"
+    });
+  }
+};
+
+// 调整toggleTimer方法，添加触觉反馈
+const toggleTimer = () => {
+  console.log('Toggle Timer 按钮点击');
+  if (!props.isRunning) {
+    console.log('发送 timer-start 事件');
+    emit('timer-start');
+    
+    // 如果支持，添加触觉反馈
+    if (window.navigator && window.navigator.vibrate) {
+      window.navigator.vibrate(100);
+    }
+  } else {
+    console.log('发送 timer-pause 事件');
+    emit('timer-pause');
+  }
+};
+
+// 调整resetTimer方法
+const resetTimer = () => {
+  console.log('发送 timer-reset 事件');
+  emit('timer-reset');
+  celebrationDone.value = false;
+  
+  // 重置小狗位置
+  if (puppyRef.value) {
+    gsap.to(puppyRef.value, { left: '10px', duration: 0.5 });
+  }
+  if (puppyWhiteRef.value) {
+    gsap.to(puppyWhiteRef.value, { left: '10px', duration: 0.5 });
+  }
+  if (puppyBlackRef.value) {
+    gsap.to(puppyBlackRef.value, { left: '10px', duration: 0.5 });
+  }
+  if (puppySpottedRef.value) {
+    gsap.to(puppySpottedRef.value, { left: '10px', duration: 0.5 });
+  }
+  
+  // 移除所有奖牌
+  document.querySelectorAll('.medal').forEach(medal => {
+    if (medal.parentNode) {
+      medal.parentNode.removeChild(medal);
+    }
+  });
+  
+  // 重置里程碑
+  collectedMilestones.value = [];
+  
+  // 移除所有动态元素并重新添加
+  cleanupDynamicElements();
+  setTimeout(() => {
+    addDynamicElements();
+  }, 100);
+};
+
+// 清理动态元素
+const cleanupDynamicElements = () => {
+  const elements = ['.bird', '.butterfly', '.cloud-shadow', '.confetti', '.finish-flash', '.flying-bone', '.plus-one'];
+  elements.forEach(selector => {
+    document.querySelectorAll(selector).forEach(el => {
+      if (el.parentNode) {
+        el.parentNode.removeChild(el);
+      }
+    });
+  });
+};
+
+// 初始化AI小狗
+const initAIPuppies = () => {
+  if (aiPuppiesInitialized.value) return;
+  
+  aiPuppiesInitialized.value = true;
+  const trackWidth = trackRef.value.clientWidth - 50;
+  
+  // 白色小狗 - 快速但起步慢
+  let whiteStart = 0;
+  const whiteInterval = setInterval(() => {
+    if (!props.isRunning || props.isFinished) return;
+    
+    if (whiteStart < 10) {
+      whiteStart += 0.5;
+    } else {
+      // 随机速度，但总体较快
+      const speed = 0.4 + (Math.random() * 0.4);
+      const newPosition = parseFloat(puppyWhiteRef.value.style.left || '10px') + speed;
+      
+      // 确保不超出赛道
+      if (newPosition <= trackWidth) {
+        gsap.to(puppyWhiteRef.value, {
+          left: `${newPosition}px`,
+          duration: 0.2,
+          ease: "none"
+        });
+      } else {
+        clearInterval(whiteInterval);
+      }
+    }
+  }, 100);
+  
+  // 黑色小狗 - 匀速但稳定
+  const blackInterval = setInterval(() => {
+    if (!props.isRunning || props.isFinished) return;
+    
+    // 稳定的中等速度
+    const speed = 0.35;
+    const newPosition = parseFloat(puppyBlackRef.value.style.left || '10px') + speed;
+    
+    // 确保不超出赛道
+    if (newPosition <= trackWidth) {
+      gsap.to(puppyBlackRef.value, {
+        left: `${newPosition}px`,
+        duration: 0.2,
+        ease: "none"
+      });
+    } else {
+      clearInterval(blackInterval);
+    }
+  }, 100);
+  
+  // 斑点小狗 - 速度不稳定
+  const spottedInterval = setInterval(() => {
+    if (!props.isRunning || props.isFinished) return;
+    
+    // 速度不稳定，时快时慢
+    const isSpurt = Math.random() > 0.7;
+    const speed = isSpurt ? 0.7 : 0.2;
+    const newPosition = parseFloat(puppySpottedRef.value.style.left || '10px') + speed;
+    
+    // 确保不超出赛道
+    if (newPosition <= trackWidth) {
+      gsap.to(puppySpottedRef.value, {
+        left: `${newPosition}px`,
+        duration: 0.2,
+        ease: "none"
+      });
+      
+      // 冲刺时显示加速效果
+      if (isSpurt) {
+        const dust = document.createElement('div');
+        dust.className = 'dust-cloud small';
+        dust.style.left = `${newPosition - 15}px`;
+        dust.style.top = '210px';
+        trackRef.value.appendChild(dust);
+        
+        setTimeout(() => {
+          if (dust.parentNode) {
+            dust.parentNode.removeChild(dust);
+          }
+        }, 1000);
+      }
+    } else {
+      clearInterval(spottedInterval);
+    }
+  }, 100);
+  
+  // 清理函数
+  const cleanup = () => {
+    clearInterval(whiteInterval);
+    clearInterval(blackInterval);
+    clearInterval(spottedInterval);
+    aiPuppiesInitialized.value = false;
+  };
+  
+  // 监听重置事件
+  watch(() => props.isFinished, (newVal) => {
+    if (newVal) {
+      cleanup();
+    }
+  });
+};
+
+// 切换音效
+const toggleSound = () => {
+  soundEnabled.value = !soundEnabled.value;
+  
+  // 根据状态控制声音
+  if (!soundEnabled.value) {
+    // 静音所有正在播放的声音
+    if (runningSoundRef.value) {
+      runningSoundRef.value.pause();
+    }
+  } else {
+    // 如果正在运行，恢复跑步声音
+    if (props.isRunning && !props.isFinished && runningSoundRef.value) {
+      runningSoundRef.value.play();
+    }
+  }
+  
+  // 存储用户的音效设置
+  try {
+    localStorage.setItem('puppyRunSoundEnabled', soundEnabled.value.toString());
+  } catch (e) {
+    console.error('无法保存声音设置', e);
+  }
+};
+
+// 初始化声音设置
+onMounted(() => {
+  console.log('PuppyRunTimer组件已挂载');
+  
+  // 确保正确初始化引用
+  if (!trackRef.value) {
+    console.error('trackRef未找到');
+  }
+  
+  if (!puppyRef.value) {
+    console.error('puppyRef未找到');
+  }
+  
+  // 从本地存储加载声音设置
+  try {
+    const savedSoundSetting = localStorage.getItem('puppyRunSoundEnabled');
+    if (savedSoundSetting !== null) {
+      soundEnabled.value = savedSoundSetting === 'true';
+    }
+  } catch (e) {
+    console.error('无法加载声音设置', e);
+  }
+  
+  // 配置音频音量
+  if (startSoundRef.value) startSoundRef.value.volume = 0.6;
+  if (runningSoundRef.value) runningSoundRef.value.volume = 0.3;
+  if (finishSoundRef.value) finishSoundRef.value.volume = 0.7;
+  if (collectSoundRef.value) collectSoundRef.value.volume = 0.5;
+  
+  // 确保小狗在起点位置
+  if (puppyRef.value) puppyRef.value.style.left = '10px';
+  if (puppyWhiteRef.value) puppyWhiteRef.value.style.left = '10px';
+  if (puppyBlackRef.value) puppyBlackRef.value.style.left = '10px';
+  if (puppySpottedRef.value) puppySpottedRef.value.style.left = '10px';
+  
+  // 为第一次运行添加动态元素
+  setTimeout(() => {
+    addDynamicElements();
+  }, 500);
+  
+  // 添加初始化调试
+  console.log('初始化状态:', {
+    isRunning: props.isRunning,
+    progress: props.progress,
+    puppyPosition: puppyPosition.value
+  });
+  
+  // 检查音频元素
+  if (!startSoundRef.value) {
+    console.error('开始音效元素未找到');
+  }
+  
+  if (!runningSoundRef.value) {
+    console.error('奔跑音效元素未找到');
+  }
+  
+  // 添加窗口大小变化监听，确保在不同屏幕大小下正常显示
+  window.addEventListener('resize', () => {
+    if (props.isRunning && puppyRef.value && trackRef.value) {
+      // 重新计算并设置小狗位置
+      const trackWidth = trackRef.value.clientWidth - 50;
+      const targetPosition = `${(props.progress * trackWidth) / 100}px`;
+      puppyRef.value.style.left = targetPosition;
+    }
+  });
+});
+
+// 添加赛道的动态元素
+const addDynamicElements = () => {
+  if (!trackRef.value) return;
+  
+  // 添加动态元素
+  const addElement = (className, count = 1) => {
+    for (let i = 0; i < count; i++) {
+      const element = document.createElement('div');
+      element.className = className;
+      
+      // 随机位置
+      element.style.left = `${10 + Math.random() * 80}%`;
+      element.style.bottom = `${Math.random() * 30}%`;
+      
+      if (className === 'tree') {
+        // 随机树大小
+        const size = 30 + Math.random() * 30;
+        element.style.width = `${size}px`;
+        element.style.height = `${size * 1.5}px`;
+      } else if (className === 'bush') {
+        // 随机灌木大小
+        const size = 20 + Math.random() * 20;
+        element.style.width = `${size}px`;
+        element.style.height = `${size}px`;
+      }
+      
+      trackRef.value.appendChild(element);
+    }
+  };
+  
+  // 添加树和灌木丛
+  addElement('tree', 3);
+  addElement('bush', 5);
+  
+  // 添加飞鸟
+  const bird = document.createElement('div');
+  bird.className = 'bird';
+  trackRef.value.appendChild(bird);
+  
+  // 鸟飞行动画
+  gsap.to(bird, {
+    left: '120%',
+    top: '10%',
+    duration: 10,
+    ease: "none",
+    repeat: -1
+  });
+  
+  // 添加蝴蝶
+  for (let i = 0; i < 3; i++) {
+    const butterfly = document.createElement('div');
+    butterfly.className = 'butterfly';
+    butterfly.style.left = `${Math.random() * 100}%`;
+    butterfly.style.top = `${30 + Math.random() * 40}%`;
+    trackRef.value.appendChild(butterfly);
+    
+    // 蝴蝶飞行路径
+    gsap.to(butterfly, {
+      left: `${Math.random() * 100}%`,
+      top: `${30 + Math.random() * 40}%`,
+      duration: 5 + Math.random() * 5,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true
+    });
+  }
+};
+
+// 更新赛道景深效果，使小狗奔跑时有景深效果
+const updateParallaxEffect = (progress) => {
+  if (!trackRef.value) return;
+
+  // 获取所有背景元素
+  const clouds = trackRef.value.querySelectorAll('.cloud');
+  const trees = trackRef.value.querySelectorAll('.tree');
+  const bushes = trackRef.value.querySelectorAll('.bush');
+  
+  // 计算偏移量
+  const offset = progress * 0.5; // 50% 的移动速度
+  
+  // 应用视差效果
+  clouds.forEach(cloud => {
+    gsap.to(cloud, {
+      x: `-=${offset * 0.2}%`, // 云移动最慢
+      duration: 0.5
+    });
+  });
+  
+  trees.forEach(tree => {
+    gsap.to(tree, {
+      x: `-=${offset * 0.5}%`, // 树移动中等速度
+      duration: 0.5
+    });
+  });
+  
+  bushes.forEach(bush => {
+    gsap.to(bush, {
+      x: `-=${offset * 0.8}%`, // 灌木移动较快
+      duration: 0.5
+    });
+  });
+};
+
+// 更新小狗位置的方法
+const updatePuppyPosition = () => {
+  if (!puppyRef.value) return;
+  
+  // 计算主角小狗位置
+  const mainProgress = calculatePuppyPosition(props.progress);
+  
+  // 所有小狗都从起跑线（左侧）开始向右移动
+  
+  // 主角小狗（棕色）
+  gsap.to(puppyRef.value, {
+    left: `${5 + mainProgress * 75}%`,
+    duration: 0.3,
+    ease: 'power1.out'
+  });
+  
+  // 计算AI对手位置（根据主角进度随机生成，但保持分散）
+  if (puppyWhiteRef.value && puppyBlackRef.value && puppySpottedRef.value) {
+    // 白色小狗 - 保持在主角后面一定距离
+    const whiteProgress = Math.max(0, mainProgress * (0.92 + Math.random() * 0.05));
+    gsap.to(puppyWhiteRef.value, {
+      left: `${15 + whiteProgress * 65}%`,
+      duration: 0.3,
+      ease: 'power1.out'
+    });
+    
+    // 黑色小狗 - 保持在白色小狗后面一定距离
+    const blackProgress = Math.max(0, mainProgress * (0.85 + Math.random() * 0.05));
+    gsap.to(puppyBlackRef.value, {
+      left: `${25 + blackProgress * 55}%`,
+      duration: 0.3,
+      ease: 'power1.out'
+    });
+    
+    // 斑点小狗 - 保持在黑色小狗后面一定距离
+    const spottedProgress = Math.max(0, mainProgress * (0.78 + Math.random() * 0.05));
+    gsap.to(puppySpottedRef.value, {
+      left: `${35 + spottedProgress * 45}%`,
+      duration: 0.3,
+      ease: 'power1.out'
+    });
+  }
+  
+  // 更新视差效果
+  updateParallaxEffect(props.progress);
+  
+  // 检查里程碑
+  checkMilestones();
+  
+  // 特殊效果：在特定进度显示思考泡泡
+  if (props.progress > 30 && props.progress < 35 && !collectedMilestones.value.includes(25)) {
+    showThoughtBubble.value = true;
+    thoughtContent.value = '好香的骨头！';
+    setTimeout(() => {
+      showThoughtBubble.value = false;
+    }, 2000);
+  } else if (props.progress > 60 && props.progress < 65 && !collectedMilestones.value.includes(50)) {
+    showThoughtBubble.value = true;
+    thoughtContent.value = '我快到了！';
+    setTimeout(() => {
+      showThoughtBubble.value = false;
+    }, 2000);
+  } else if (props.progress > 85 && props.progress < 90 && !collectedMilestones.value.includes(75)) {
+    showThoughtBubble.value = true;
+    thoughtContent.value = '终点就在前方！';
+    setTimeout(() => {
+      showThoughtBubble.value = false;
+    }, 2000);
+  }
+  
+  // 完成时的特殊效果
+  if (props.progress >= 100) {
+    celebrateFinish();
+  }
+};
+
+// 计算小狗位置（平滑曲线）
+const calculatePuppyPosition = (progress) => {
+  // 使用缓动函数让终点附近放慢速度
+  if (progress >= 100) return 1;
+  const normalizedProgress = Math.min(1, progress / 100);
+  // 使用二次缓动函数使运动更平滑
+  return normalizedProgress * normalizedProgress;
+};
+
+// 监听时间变化，实时更新
+watch([minutes, seconds], () => {
+  if (props.isRunning && !props.isFinished) {
+    updatePuppyPosition();
+  }
+});
+
+// 添加额外的监听器，直接响应props.progress的变化
+watch(() => props.progress, (newVal, oldVal) => {
+  if (props.isRunning && !props.isFinished) {
+    updatePuppyPosition();
+  }
+});
+
+const checkMilestones = () => {
+  const milestones = [25, 50, 75];
+  milestones.forEach(milestone => {
+    if (puppyPosition.value >= milestone && !collectedMilestones.value.includes(milestone)) {
+      collectMilestone(milestone);
+    }
+  });
+};
+
+const collectMilestone = (milestone) => {
+  // 添加到已收集里程碑列表
+  collectedMilestones.value.push(milestone);
+  
+  // 播放收集音效
+  if (soundEnabled.value) {
+    collectSoundRef.value.play();
+  }
+  
+  // 播放收集动画
+  const position = (milestone / 100) * (trackRef.value.clientWidth - 50);
+  
+  // 创建一个飞向小狗的骨头
+  const flyingBone = document.createElement('div');
+  flyingBone.className = 'flying-bone';
+  flyingBone.style.left = `${position}px`;
+  trackRef.value.appendChild(flyingBone);
+  
+  // 播放飞行动画
+  gsap.to(flyingBone, {
+    left: `${puppyPosition.value / 100 * (trackRef.value.clientWidth - 50)}px`,
+    top: '200px',
+    opacity: 0,
+    rotation: 360,
+    duration: 0.8,
+    ease: "power2.in",
+    onComplete: () => {
+      // 动画完成后移除元素
+      if (flyingBone.parentNode) {
+        flyingBone.parentNode.removeChild(flyingBone);
+      }
+      
+      // 显示+1效果
+      const plusOne = document.createElement('div');
+      plusOne.className = 'plus-one';
+      plusOne.innerHTML = '+1';
+      plusOne.style.left = `${puppyPosition.value / 100 * (trackRef.value.clientWidth - 50) + 25}px`;
+      plusOne.style.top = '180px';
+      trackRef.value.appendChild(plusOne);
+      
+      gsap.to(plusOne, {
+        top: '150px',
+        opacity: 0,
+        duration: 1,
+        ease: "power1.out",
+        onComplete: () => {
+          if (plusOne.parentNode) {
+            plusOne.parentNode.removeChild(plusOne);
+          }
+        }
+      });
+    }
+  });
+  
+  // 小狗欢呼效果
+  showThoughtBubble.value = true;
+  thoughtContent.value = '哇！骨头！';
+  setTimeout(() => {
+    showThoughtBubble.value = false;
+  }, 1500);
+};
+
+const createFinishFlash = () => {
+  const flash = document.createElement('div');
+  flash.className = 'finish-flash';
+  trackRef.value.appendChild(flash);
+  
+  gsap.to(flash, {
+    opacity: 0,
+    duration: 1.5,
+    onComplete: () => {
+      if (flash.parentNode) {
+        flash.parentNode.removeChild(flash);
+      }
+    }
+  });
+};
+
+const createConfetti = () => {
+  // 创建彩色粒子
+  for (let i = 0; i < 50; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
+    confetti.style.left = `${Math.random() * 100}%`;
+    confetti.style.top = `${Math.random() * 70}%`;
+    confetti.style.animationDuration = `${Math.random() * 2 + 1}s`;
+    confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+    trackRef.value.appendChild(confetti);
+    
+    // 3秒后移除
+    setTimeout(() => {
+      if (confetti.parentNode) {
+        confetti.parentNode.removeChild(confetti);
+      }
+    }, 3000);
+  }
+};
+</script> 
+
+<style scoped>
+.puppy-run-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.timer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.timer-display {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px 15px;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  min-width: 100px;
+  z-index: 20;
+}
+
+.race-track {
+  position: relative;
+  width: 100%;
+  height: 450px; /* 增加高度 */
+  background-color: #78c27d;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+/* 赛道背景 */
+.track-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.sky-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: linear-gradient(to bottom, #64B5F6, #90CAF9, #BBDEFB);
+  z-index: 0;
+}
+
+.grass-background {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%2378c27d"/><g fill="%2365a569"><rect x="0" y="50" width="10" height="50"/><rect x="10" y="60" width="10" height="40"/><rect x="20" y="55" width="10" height="45"/><rect x="30" y="65" width="10" height="35"/><rect x="40" y="50" width="10" height="50"/><rect x="50" y="60" width="10" height="40"/><rect x="60" y="55" width="10" height="45"/><rect x="70" y="65" width="10" height="35"/><rect x="80" y="50" width="10" height="50"/><rect x="90" y="60" width="10" height="40"/></g></svg>');
+  background-size: 200px 200px;
+  z-index: 1;
+}
+
+.sun {
+  position: absolute;
+  top: 30px;
+  right: 80px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, #FFEB3B, #FDD835);
+  border-radius: 50%;
+  box-shadow: 0 0 50px rgba(255, 235, 59, 0.7);
+  z-index: 1;
+}
+
+.sun-ray {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 3px;
+  background-color: rgba(255, 235, 59, 0.6);
+  transform-origin: 0 0;
+  animation: sun-ray-rotate 10s linear infinite;
+}
+
+@keyframes sun-ray-rotate {
+  from {
+    transform: rotate(0deg) translateY(-50%);
+  }
+  to {
+    transform: rotate(360deg) translateY(-50%);
+  }
+}
+
+/* 赛道增强效果 */
+.race-track-enhancements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 移动的云效果 */
+.moving-clouds {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+}
+
+.cloud {
+  position: absolute;
+  height: 25px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+  animation: cloud-move linear infinite;
+  top: 10px;
+}
+
+.cloud:before, .cloud:after {
+  content: '';
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+}
+
+.cloud:before {
+  width: 25px;
+  height: 25px;
+  top: -10px;
+  left: 10px;
+}
+
+.cloud:after {
+  width: 20px;
+  height: 20px;
+  top: -5px;
+  right: 10px;
+}
+
+.cloud-1 {
+  width: 70px;
+  animation-duration: 60s;
+  animation-delay: 0s;
+  opacity: 0.9;
+}
+
+.cloud-2 {
+  width: 50px;
+  top: 5px;
+  animation-duration: 45s;
+  animation-delay: 15s;
+  opacity: 0.7;
+}
+
+.cloud-3 {
+  width: 60px;
+  top: 20px;
+  animation-duration: 55s;
+  animation-delay: 30s;
+  opacity: 0.8;
+}
+
+@keyframes cloud-move {
+  0% {
+    transform: translateX(-100px);
+  }
+  100% {
+    transform: translateX(calc(100% + 100px));
+  }
+}
+
+/* 草丛效果 */
+.grass-tufts {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+}
+
+.grass-tuft {
+  position: absolute;
+  bottom: 0;
+  width: 20px;
+  height: 15px;
+  background: linear-gradient(to top, transparent, transparent 30%, #4CAF50 30%);
+  clip-path: polygon(
+    50% 0%, 
+    30% 30%, 
+    60% 20%, 
+    40% 40%, 
+    70% 30%, 
+    50% 50%, 
+    80% 40%, 
+    60% 60%, 
+    90% 50%, 
+    70% 70%, 
+    100% 60%, 
+    80% 80%, 
+    100% 100%, 
+    0 100%, 
+    20% 80%, 
+    0 60%, 
+    30% 70%, 
+    10% 50%, 
+    40% 60%, 
+    20% 40%, 
+    50% 30%, 
+    30% 20%
+  );
+  animation: grass-sway 3s ease-in-out infinite alternate;
+}
+
+@keyframes grass-sway {
+  0% {
+    transform: rotate(-5deg) scaleY(1);
+  }
+  100% {
+    transform: rotate(5deg) scaleY(1.05);
+  }
+}
+
+/* 距离标记 */
+.distance-markers {
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  width: 100%;
+  height: 15px;
+}
+
+.distance-marker {
+  position: absolute;
+  bottom: 0;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.distance-marker:after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 5px;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* 里程碑骨头样式 */
+.milestone-bones {
+  position: absolute;
+  top: 5px; /* 调整顶部位置 */
+  left: 10%;
+  width: 80%;
+  height: 20px;
+  z-index: 4;
+}
+
+.milestone-bone {
+  position: absolute;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.milestone-bone.collected .mini-bone {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.5) rotate(720deg);
+}
+
+.milestone-bone.collected .milestone-label {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.mini-bone {
+  width: 20px;
+  height: 8px;
+  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  border-radius: 4px;
+  transform: rotate(-10deg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.5s ease-out;
+}
+
+.mini-bone:before, .mini-bone:after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 12px;
+  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  border-radius: 40%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.mini-bone:before {
+  top: -2px;
+  left: -3px;
+  transform: rotate(-10deg);
+}
+
+.mini-bone:after {
+  top: -2px;
+  right: -3px;
+  transform: rotate(10deg);
+}
+
+.milestone-label {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #777;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+/* 赛道场景深度 */
+.scene-depth {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+/* 小狗样式 */
+.puppies-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+}
+
+/* 调整小狗的整体样式为2D */
+.puppy {
+  position: absolute;
+  width: 60px;
+  height: 50px;
+  bottom: 20px;
+  transition: all 0.3s ease-out;
+  z-index: 20;
+}
+
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+/* 调整小狗的初始位置，横向拉开距离 */
+.puppy-brown {
+  left: 5%;
+  bottom: 20px;
+}
+
+.puppy-white {
+  left: 25%;
+  bottom: 20px;
+}
+
+.puppy-black {
+  left: 45%;
+  bottom: 20px;
+}
+
+.puppy-spotted {
+  left: 65%;
+  bottom: 20px;
+}
+
+/* 调整身体结构为2D */
+.puppy-trunk {
+  position: absolute;
+  width: 36px;
+  height: 24px;
+  background-color: inherit;
+  border-radius: 12px;
+  top: 15px;
+  left: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.puppy-head {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  background-color: inherit;
+  border-radius: 50%;
+  top: 0;
+  left: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 修改腿部样式为2D */
+.puppy-legs {
+  position: absolute;
+  width: 100%;
+  height: 15px;
+  bottom: 0;
+  left: 12px;
+}
+
+.puppy-leg-front,
+.puppy-leg-back {
+  position: absolute;
+  width: 6px;
+  height: 15px;
+  background-color: inherit;
+  border-radius: 3px;
+  bottom: -5px;
+}
+
+.puppy-leg-front {
+  left: 8px;
+}
+
+.puppy-leg-back {
+  left: 24px;
+}
+
+/* 修改尾巴样式为2D */
+.puppy-tail {
+  position: absolute;
+  width: 6px;
+  height: 14px;
+  background-color: inherit;
+  border-radius: 3px;
+  top: 18px;
+  right: 2px;
+  transform-origin: top center;
+}
+
+/* 调整耳朵样式为2D */
+.puppy-ear {
+  position: absolute;
+  width: 12px;
+  height: 14px;
+  background-color: inherit;
+  border-radius: 6px 6px 0 0;
+  top: -8px;
+}
+
+.puppy-ear-left {
+  left: 4px;
+  transform: rotate(-15deg);
+}
+
+.puppy-ear-right {
+  right: 4px;
+  transform: rotate(15deg);
+}
+
+/* 调整眼睛样式为2D */
+.puppy-eye {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 12px;
+}
+
+.puppy-eye-left {
+  left: 8px;
+}
+
+.puppy-eye-right {
+  right: 8px;
+}
+
+/* 调整鼻子样式为2D */
+.puppy-nose {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* 调整嘴巴样式为2D */
+.puppy-mouth {
+  position: absolute;
+  width: 8px;
+  height: 4px;
+  border-bottom: 2px solid #000;
+  border-radius: 0 0 8px 8px;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* 修改跑步动画为2D效果 */
+@keyframes leg-run {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-15deg);
+  }
+}
+
+@keyframes leg-run-back {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(15deg);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 修改小狗颜色 */
+.puppy-brown .puppy-trunk,
+.puppy-brown .puppy-head,
+.puppy-brown .puppy-leg-front,
+.puppy-brown .puppy-leg-back,
+.puppy-brown .puppy-tail,
+.puppy-brown .puppy-ear {
+  background-color: #8B4513;
+}
+
+.puppy-white .puppy-trunk,
+.puppy-white .puppy-head,
+.puppy-white .puppy-leg-front,
+.puppy-white .puppy-leg-back,
+.puppy-white .puppy-tail,
+.puppy-white .puppy-ear {
+  background-color: #F5F5F5;
+}
+
+.puppy-black .puppy-trunk,
+.puppy-black .puppy-head,
+.puppy-black .puppy-leg-front,
+.puppy-black .puppy-leg-back,
+.puppy-black .puppy-tail,
+.puppy-black .puppy-ear {
+  background-color: #222;
+}
+
+/* 修改斑点狗样式为2D */
+.puppy-spotted .puppy-trunk,
+.puppy-spotted .puppy-head {
+  background-color: #FFF;
+  background-image: radial-gradient(circle, #333 2px, transparent 2px);
+  background-size: 10px 10px;
+  background-position: 0 0;
+}
+
+.puppy-spotted .puppy-leg-front,
+.puppy-spotted .puppy-leg-back,
+.puppy-spotted .puppy-tail,
+.puppy-spotted .puppy-ear {
+  background-color: #333;
+}
+
+/* 简化阴影效果 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 15px;
+  width: 30px;
+  height: 4px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 50%;
+}
+
+/* 修改奔跑动画 */
+.puppy-running .puppy-leg-front {
+  animation: leg-run 0.4s infinite;
+}
+
+.puppy-running .puppy-leg-back {
+  animation: leg-run-back 0.4s 0.2s infinite;
+}
+
+.puppy-running .puppy-tail {
+  animation: tail-wag 0.3s infinite;
+}
+
+/* 简化奔跑时的身体动画 */
+.puppy-running {
+  animation: body-bounce 0.4s infinite;
+}
+
+@keyframes body-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+/* 对手小狗样式调整 */
+.puppy-white {
+  bottom: 15px;
+  transform: translateZ(0) scale(0.75);
+  z-index: 9;
+}
+
+.puppy-white .puppy-head,
+.puppy-white .puppy-ear,
+.puppy-white .puppy-trunk {
+  background-color: #F5F5F5;
+}
+
+.puppy-white .puppy-leg-front,
+.puppy-white .puppy-leg-back,
+.puppy-white .puppy-tail {
+  background-color: #E0E0E0;
+}
+
+.puppy-black {
+  bottom: 30px;
+  transform: translateZ(0) scale(0.75);
+  z-index: 8;
+}
+
+.puppy-black .puppy-head,
+.puppy-black .puppy-ear,
+.puppy-black .puppy-trunk {
+  background-color: #2D2D2D;
+}
+
+.puppy-black .puppy-leg-front,
+.puppy-black .puppy-leg-back,
+.puppy-black .puppy-tail {
+  background-color: #1F1F1F;
+}
+
+.puppy-black .puppy-eye::after {
+  opacity: 0.9;
+}
+
+.puppy-spotted {
+  bottom: 45px;
+  transform: translateZ(0) scale(0.75);
+  z-index: 7;
+}
+
+.puppy-spotted .puppy-head {
+  background-color: #FFF;
+  position: relative;
+}
+
+.puppy-spotted .puppy-trunk {
+  background-color: #FFF;
+  position: relative;
+}
+
+.puppy-spotted .puppy-trunk::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 20px;
+  width: 15px;
+  height: 15px;
+  background-color: #6D4C41;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.puppy-spotted .puppy-head::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 15px;
+  width: 15px;
+  height: 15px;
+  background-color: #6D4C41;
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.puppy-spotted .puppy-ear {
+  background-color: #6D4C41;
+}
+
+.puppy-spotted .puppy-leg-front,
+.puppy-spotted .puppy-leg-back {
+  background-color: #FFF;
+}
+
+.puppy-spotted .puppy-tail {
+  background-color: #6D4C41;
+}
+
+/* 增强跑步效果 */
+.dust-cloud {
+  position: absolute;
+  bottom: 2px;
+  left: 10px;
+  width: 25px;
+  height: 18px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  animation: dust-puff 0.4s infinite alternate;
+  filter: blur(1px);
+  transform: translateZ(-10px);
+  z-index: 1;
+}
+
+@keyframes dust-puff {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.8) translateY(0) translateZ(-10px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2) translateY(-5px) translateZ(-10px);
+  }
+}
+
+/* 小狗阴影 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 15px;
+  width: 30px;
+  height: 4px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 50%;
+}
+
+/* 动画暂停 */
+.puppy-idle .puppy-ear-left,
+.puppy-idle .puppy-ear-right,
+.puppy-idle .puppy-leg-front,
+.puppy-idle .puppy-leg-back,
+.puppy-idle .puppy-tail,
+.puppy-idle .puppy-tongue,
+.puppy-idle .puppy-body {
+  animation-play-state: paused !important;
+}
+
+.puppy-finished .puppy-tail {
+  animation: tail-wag 0.2s infinite alternate !important;
+}
+
+/* 思考泡泡样式 */
+.thought-bubble {
+  position: absolute;
+  top: -50px;
+  left: 10px;
+  background: white;
+  padding: 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 10;
+  white-space: nowrap;
+  animation: bubble-appear 0.3s ease-out;
+}
+
+.thought-bubble:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 15px;
+  border-width: 10px 5px 0;
+  border-style: solid;
+  border-color: white transparent transparent;
+}
+
+@keyframes bubble-appear {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 终点线样式 */
+.finish-line {
+  position: absolute;
+  bottom: 0;
+  right: 5%;
+  width: 10px;
+  height: 80%;
+  background: repeating-linear-gradient(45deg, #f44336, #f44336 10px, white 10px, white 20px);
+  border-radius: 2px;
+  z-index: 3;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.finish-flag {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  animation: flag-wave 2s infinite ease-in-out;
+}
+
+.flag-part {
+  width: 30px;
+  height: 20px;
+  background: linear-gradient(135deg, #f44336 50%, #ffffff 50%);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  transform-origin: left center;
+}
+
+.flag-pole {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 40px;
+  background: #616161;
+  z-index: -1;
+}
+
+@keyframes flag-wave {
+  0%, 100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(15deg);
+  }
+}
+
+/* 飞行骨头样式 */
+.flying-bone {
+  position: absolute;
+  top: 20px;
+  width: 20px;
+  height: 8px;
+  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 10px rgba(255, 255, 255, 0.8);
+  z-index: 10;
+}
+
+.flying-bone:before, .flying-bone:after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 12px;
+  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  border-radius: 40%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.flying-bone:before {
+  top: -2px;
+  left: -3px;
+  transform: rotate(-10deg);
+}
+
+.flying-bone:after {
+  top: -2px;
+  right: -3px;
+  transform: rotate(10deg);
+}
+
+/* +1效果 */
+.plus-one {
+  position: absolute;
+  color: #4CAF50;
+  font-size: 16px;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(255,255,255,0.7);
+  z-index: 10;
+}
+
+/* 完成闪光效果 */
+.finish-flash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+  opacity: 0.8;
+  z-index: 15;
+  pointer-events: none;
+}
+
+/* 完成线额外动画 */
+.finish-line-active {
+  animation: finish-line-celebration 1s infinite alternate;
+}
+
+@keyframes finish-line-celebration {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    background: repeating-linear-gradient(45deg, #ff9800, #ff9800 10px, #ffeb3b 10px, #ffeb3b 20px);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.9);
+    background: repeating-linear-gradient(45deg, #ffeb3b, #ffeb3b 10px, #ff9800 10px, #ff9800 20px);
+  }
+}
+
+/* 奖励 - 骨头和奖杯 */
+.reward {
+  position: absolute;
+  right: 5%;
+  bottom: 50px;
+  z-index: 6;
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+
+.bone {
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  width: 40px;
+  height: 15px;
+  background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+  border-radius: 8px;
+  transform: rotate(-10deg);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  animation: bone-float 3s infinite ease-in-out;
+}
+
+.bone:before, .bone:after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 22px;
+  background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+  border-radius: 40%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bone:before {
+  top: -4px;
+  left: -6px;
+  transform: rotate(-10deg);
+}
+
+.bone:after {
+  top: -4px;
+  right: -6px;
+    transform: rotate(10deg);
+  }
+
+.trophy {
+  position: absolute;
+  bottom: 25px;
+  right: -10px;
+  width: 35px;
+  height: 45px;
+  animation: trophy-rotate 5s infinite ease-in-out;
+  transform-style: preserve-3d;
+}
+
+.trophy-cup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70%;
+  background: linear-gradient(45deg, #ffd700 30%, #ffeb3b 50%, #ffd700 70%);
+  border-radius: 10px 10px 15px 15px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+  overflow: hidden;
+}
+
+.trophy-cup:before {
+  content: '';
+  position: absolute;
+  top: 5%;
+  left: 10%;
+  width: 80%;
+  height: 70%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transform: rotateZ(25deg);
+  animation: trophy-shine 3s infinite alternate;
+}
+
+.trophy-base {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 15%;
+  background: linear-gradient(to bottom, #ffd700, #ffb300);
+  border-radius: 5px;
+}
+
+.trophy-base:after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 5px;
+  background: linear-gradient(to bottom, #ffb300, #ffa000);
+  border-radius: 3px;
+}
+
+.trophy-handles {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  width: 100%;
+  height: 20px;
+}
+
+.trophy-handle {
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 15px;
+  border: 3px solid #ffd700;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.trophy-handle-left {
+  left: -8px;
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.trophy-handle-right {
+  right: -8px;
+  border-left: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+@keyframes bone-float {
+  0%, 100% {
+    transform: rotate(-10deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-8deg) translateY(-5px);
+  }
+}
+
+@keyframes trophy-rotate {
+  0%, 100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(15deg);
+  }
+}
+
+@keyframes trophy-shine {
+  0% {
+    left: -100%;
+  }
+  60%, 100% {
+    left: 100%;
+  }
+}
+
+/* 环境细节 */
+.environment-detail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.light-rays {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.2) 60%, rgba(255, 255, 255, 0) 70%);
+  opacity: 0.7;
+  z-index: 2;
+  animation: light-pulse 5s infinite alternate;
+}
+
+@keyframes light-pulse {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+/* 彩色粒子 */
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: confetti-fall 2s forwards;
+  z-index: 9;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100px) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* 控制按钮样式 */
+.timer-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.control-button {
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
+}
+
+.control-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.control-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.control-button.start-button {
+  background: linear-gradient(135deg, #4CAF50, #388E3C);
+  color: white;
+}
+
+.control-button.reset-button {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: white;
+}
+
+.control-button.sound-button {
+  background: linear-gradient(135deg, #607D8B, #455A64);
+  color: white;
+}
+
+.control-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* 赛道装饰 */
+.track-decorations {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.bush {
+  position: absolute;
+  width: 50px;
+  height: 40px;
+  background: radial-gradient(circle at 50% 80%, #4CAF50, #388E3C);
+  border-radius: 50%;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+.bush-1 {
+  top: 70%;
+  left: 15%;
+}
+
+.bush-2 {
+  top: 75%;
+  left: 45%;
+}
+
+.bush-3 {
+  top: 72%;
+  right: 15%;
+}
+
+.tree {
+  position: absolute;
+  z-index: 2;
+}
+
+.tree-trunk {
+  position: absolute;
+  width: 12px;
+  height: 60px;
+  background: #795548;
+  border-radius: 2px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tree-top {
+  position: absolute;
+  width: 80px;
+  height: 100px;
+  background: radial-gradient(ellipse at 50% 50%, #4CAF50, #2E7D32);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tree-1 {
+  bottom: 10%;
+  left: 5%;
+  transform: scale(0.6);
+}
+
+.tree-2 {
+  bottom: 0;
+  right: 10%;
+  transform: scale(0.8);
+}
+
+/* 添加远处山脉 */
+.distant-mountains {
+  position: absolute;
+  bottom: 50%;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: #4CAF50;
+  z-index: 1;
+  clip-path: polygon(
+    0% 100%,
+    10% 70%,
+    20% 100%,
+    30% 60%,
+    40% 80%,
+    50% 50%,
+    60% 70%,
+    70% 60%,
+    80% 80%,
+    90% 60%,
+    100% 100%
+  );
+  opacity: 0.5;
+}
+
+.distant-trees {
+  position: absolute;
+  bottom: 50%;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  z-index: 1;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="500" height="50" viewBox="0 0 500 50"><g fill="%232E7D32"><path d="M20,50 L30,30 L40,50 Z"/><path d="M50,50 L60,20 L70,50 Z"/><path d="M80,50 L90,25 L100,50 Z"/><path d="M120,50 L130,30 L140,50 Z"/><path d="M150,50 L160,20 L170,50 Z"/><path d="M190,50 L200,15 L210,50 Z"/><path d="M230,50 L240,25 L250,50 Z"/><path d="M260,50 L270,30 L280,50 Z"/><path d="M300,50 L310,20 L320,50 Z"/><path d="M340,50 L350,25 L360,50 Z"/><path d="M380,50 L390,30 L400,50 Z"/><path d="M420,50 L430,15 L440,50 Z"/><path d="M460,50 L470,25 L480,50 Z"/></g></svg>');
+  background-repeat: repeat-x;
+  background-size: 500px 50px;
+}
+
+/* 赛道起点线 */
+.start-line {
+  position: absolute;
+  bottom: 0;
+  left: 5%;
+  width: 6px;
+  height: 60%;
+  background: repeating-linear-gradient(45deg, #2196F3, #2196F3 10px, white 10px, white 20px);
+  border-radius: 2px;
+  z-index: 3;
+}
+
+/* 多个小狗的样式 */
+.puppy-brown {
+  /* 棕色小狗 -- 原来的样式 */
+  bottom: 10px;
+  left: 10%;
+}
+
+.puppy-white {
+  /* 白色小狗 */
+  bottom: 15px;
+  left: 30%; /* 从5%改为30% */
+  transform: scale(0.9);
+}
+
+.puppy-black {
+  /* 黑色小狗 */
+  bottom: 5px;
+  left: 50%; /* 从15%改为50% */
+  transform: scale(0.95);
+}
+
+.puppy-spotted {
+  /* 斑点小狗 */
+  bottom: 12px;
+  left: 70%; /* 从20%改为70% */
+  transform: scale(0.9);
+}
+
+/* 棕色小狗尾巴 */
+.puppy-brown .puppy-tail {
+  background-color: #8B4513;
+  height: 15px;
+  width: 8px;
+  animation: tail-wag-brown 0.8s infinite;
+}
+
+/* 白色小狗尾巴 */
+.puppy-white .puppy-tail {
+  background-color: #F5F5F5;
+  height: 18px;
+  width: 10px;
+  border-radius: 10px;
+  animation: tail-wag-white 0.8s infinite;
+}
+
+/* 黑色小狗尾巴 */
+.puppy-black .puppy-tail {
+  background-color: #222;
+  height: 17px;
+  width: 9px;
+  animation: tail-wag-black 0.7s infinite;
+}
+
+/* 斑点小狗尾巴 */
+.puppy-spotted .puppy-tail {
+  background-color: #111;
+  height: 16px;
+  width: 8px;
+  animation: tail-wag-spotted 0.9s infinite;
+}
+
+/* 尾巴摆动动画 */
+@keyframes tail-wag-brown {
+  0%, 100% {
+    transform: rotateZ(-10deg) translateZ(2px);
+  }
+  50% {
+    transform: rotateZ(20deg) translateZ(2px);
+  }
+}
+
+@keyframes tail-wag-white {
+  0%, 100% {
+    transform: rotateZ(-15deg) translateZ(2px);
+  }
+  50% {
+    transform: rotateZ(15deg) translateZ(2px);
+  }
+}
+
+@keyframes tail-wag-black {
+  0%, 100% {
+    transform: rotateZ(-5deg) translateZ(2px);
+  }
+  50% {
+    transform: rotateZ(25deg) translateZ(2px);
+  }
+}
+
+@keyframes tail-wag-spotted {
+  0%, 100% {
+    transform: rotateZ(-10deg) translateZ(2px);
+  }
+  50% {
+    transform: rotateZ(15deg) translateZ(2px);
+  }
+}
+
+/* 确保小狗身体部分正确叠放 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.puppy-head {
+  z-index: 2;
+}
+
+.puppy-trunk {
+  z-index: 1;
+}
+
+.puppy-legs {
+  z-index: 0;
+}
+
+.puppy-tail {
+  z-index: 0;
+}
+
+/* 调整小狗身体颜色 */
+.puppy-brown .puppy-trunk,
+.puppy-brown .puppy-head {
+  background-color: #8B4513;
+}
+
+.puppy-white .puppy-trunk,
+.puppy-white .puppy-head {
+  background-color: #F5F5F5;
+}
+
+.puppy-black .puppy-trunk,
+.puppy-black .puppy-head {
+  background-color: #222;
+}
+
+.puppy-spotted .puppy-trunk,
+.puppy-spotted .puppy-head {
+  background-color: #FFF;
+  background-image: radial-gradient(circle, #111 2px, transparent 3px);
+  background-size: 12px 12px;
+  background-position: 0 0, 6px 6px;
+}
+
+/* 修复白色小狗的腿部和尾巴颜色 */
+.puppy-white .puppy-leg-front,
+.puppy-white .puppy-leg-back,
+.puppy-white .puppy-tail {
+  background-color: #E0E0E0;
+}
+
+/* 修复黑色小狗的腿部和尾巴颜色 */
+.puppy-black .puppy-leg-front,
+.puppy-black .puppy-leg-back,
+.puppy-black .puppy-tail {
+  background-color: #1F1F1F;
+}
+
+/* 小狗动画关键帧 */
+@keyframes ear-flap {
+  0%, 100% {
+    transform: rotateY(-15deg) rotateZ(-30deg) translateZ(2px);
+  }
+  50% {
+    transform: rotateY(-15deg) rotateZ(-40deg) translateZ(2px);
+  }
+}
+
+@keyframes blink {
+  0%, 96%, 100% {
+    transform: scaleY(1) translateZ(8px);
+  }
+  98% {
+    transform: scaleY(0.1) translateZ(8px);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotateZ(-10deg) translateZ(-5px);
+  }
+  50% {
+    transform: rotateZ(10deg) translateZ(-5px);
+  }
+}
+
+@keyframes tongue-pant {
+  0%, 100% {
+    height: 6px;
+  }
+  50% {
+    height: 9px;
+  }
+}
+
+.puppy-running .puppy-ear-left {
+  animation: ear-flap 0.5s infinite;
+}
+
+.puppy-running .puppy-ear-right {
+  animation: ear-flap 0.5s 0.25s infinite;
+}
+
+.puppy-running .puppy-tongue {
+  animation: tongue-pant 0.3s infinite;
+}
+
+.puppy-running .puppy-tail {
+  animation: tail-wag 0.4s infinite;
+}
+
+/* 修复斑点小狗样式 */
+.puppy-spotted .puppy-head,
+.puppy-spotted .puppy-trunk {
+  background-color: #E0E0E0;
+  background-image: radial-gradient(circle, #333 2px, transparent 3px);
+  background-size: 12px 12px;
+  background-position: 0 0, 6px 6px;
+}
+
+.puppy-spotted .puppy-leg-front,
+.puppy-spotted .puppy-leg-back,
+.puppy-spotted .puppy-tail,
+.puppy-spotted .puppy-ear {
+  background-color: #E0E0E0;
+  background-image: radial-gradient(circle, #333 1px, transparent 2px);
+  background-size: 8px 8px;
+}
+
+/* 跑步和闲置状态 */
+.puppy-idle {
+  transform: translateZ(0) scale(0.9);
+}
+
+.puppy-running {
+  transform: translateZ(0) scale(1);
+}
+
+/* 完成状态的欢呼动画 */
+.puppy-finished {
+  transform: translateZ(0) scale(1.1);
+  animation: jump-celebration 1s ease-in-out;
+}
+
+@keyframes jump-celebration {
+  0%, 100% {
+    transform: translateZ(0) scale(1.1) translateY(0);
+  }
+  50% {
+    transform: translateZ(0) scale(1.1) translateY(-20px);
+  }
+}
+
+/* 修改小狗整体样式为竖直站立的3D效果 */
+.puppy {
+  position: absolute;
+  width: 50px;
+  height: 80px;
+  bottom: 15px;
+  transition: all 0.3s ease-out;
+  transform-style: preserve-3d;
+  perspective: 300px;
+  z-index: 20;
+}
+
+/* 调整小狗的初始位置，所有小狗在起跑线 */
+.puppy-brown {
+  left: 5%;
+  transform: translateZ(0) scale(1);
+  z-index: 24;
+}
+
+.puppy-white {
+  left: 15%;
+  transform: translateZ(0) scale(0.95);
+  z-index: 23;
+}
+
+.puppy-black {
+  left: 25%;
+  transform: translateZ(0) scale(0.9);
+  z-index: 22;
+}
+
+.puppy-spotted {
+  left: 35%;
+  transform: translateZ(0) scale(0.85);
+  z-index: 21;
+}
+
+/* 调整身体结构为竖直站立的3D效果 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.puppy-trunk {
+  position: absolute;
+  width: 30px;
+  height: 40px;
+  background-color: inherit;
+  border-radius: 15px 15px 10px 10px;
+  top: 25px;
+  left: 10px;
+  transform: translateZ(2px);
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+}
+
+.puppy-head {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background-color: inherit;
+  border-radius: 50%;
+  top: 0;
+  left: 9px;
+  z-index: 10;
+  transform-style: preserve-3d;
+  transform: translateZ(5px);
+  box-shadow: 2px 3px 5px rgba(0,0,0,0.2);
+}
+
+/* 添加耳朵 */
+.puppy-ear {
+  position: absolute;
+  width: 14px;
+  height: 16px;
+  background-color: inherit;
+  border-radius: 7px 7px 0 0;
+  top: -8px;
+  transform-style: preserve-3d;
+}
+
+.puppy-ear-left {
+  left: 2px;
+  transform: rotateY(-15deg) rotateZ(-30deg) translateZ(2px);
+}
+
+.puppy-ear-right {
+  right: 2px;
+  transform: rotateY(15deg) rotateZ(30deg) translateZ(2px);
+}
+
+/* 添加脸部特征 */
+.puppy-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 12px;
+  z-index: 11;
+}
+
+.puppy-eye-left {
+  left: 7px;
+  transform: translateZ(6px);
+}
+
+.puppy-eye-right {
+  right: 7px;
+  transform: translateZ(6px);
+}
+
+.puppy-nose {
+  position: absolute;
+  width: 8px;
+  height: 6px;
+  background-color: #000;
+  border-radius: 50%;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%) translateZ(6px);
+  z-index: 11;
+}
+
+.puppy-mouth {
+  position: absolute;
+  width: 10px;
+  height: 4px;
+  border-bottom: 2px solid #000;
+  border-radius: 0 0 5px 5px;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%) translateZ(6px);
+  z-index: 11;
+}
+
+/* 调整腿部为竖直站立 */
+.puppy-legs {
+  position: absolute;
+  width: 100%;
+  height: 25px;
+  bottom: 0;
+  left: 0;
+  transform-style: preserve-3d;
+}
+
+.puppy-leg-front,
+.puppy-leg-back {
+  position: absolute;
+  width: 8px;
+  height: 20px;
+  background-color: inherit;
+  border-radius: 4px;
+  bottom: 0;
+}
+
+.puppy-leg-front {
+  left: 14px;
+  transform: translateZ(4px);
+}
+
+.puppy-leg-back {
+  left: 28px;
+  transform: translateZ(-2px);
+}
+
+/* 调整尾巴 */
+.puppy-tail {
+  position: absolute;
+  width: 8px;
+  height: 18px;
+  background-color: inherit;
+  border-radius: 4px;
+  top: 30px;
+  right: 5px;
+  transform-origin: top center;
+  transform: rotateZ(-30deg) translateZ(-2px);
+  z-index: 5;
+}
+
+/* 调整小狗颜色 */
+.puppy-brown .puppy-trunk,
+.puppy-brown .puppy-head,
+.puppy-brown .puppy-leg-front,
+.puppy-brown .puppy-leg-back,
+.puppy-brown .puppy-tail,
+.puppy-brown .puppy-ear {
+  background-color: #8B4513;
+}
+
+.puppy-white .puppy-trunk,
+.puppy-white .puppy-head,
+.puppy-white .puppy-leg-front,
+.puppy-white .puppy-leg-back,
+.puppy-white .puppy-tail,
+.puppy-white .puppy-ear {
+  background-color: #F5F5F5;
+}
+
+.puppy-black .puppy-trunk,
+.puppy-black .puppy-head,
+.puppy-black .puppy-leg-front,
+.puppy-black .puppy-leg-back,
+.puppy-black .puppy-tail,
+.puppy-black .puppy-ear {
+  background-color: #222;
+}
+
+/* 斑点狗样式 */
+.puppy-spotted .puppy-trunk,
+.puppy-spotted .puppy-head {
+  background-color: #FFF;
+  background-image: radial-gradient(circle, #333 3px, transparent 3px);
+  background-size: 12px 12px;
+  background-position: 0 0;
+}
+
+.puppy-spotted .puppy-leg-front,
+.puppy-spotted .puppy-leg-back,
+.puppy-spotted .puppy-tail,
+.puppy-spotted .puppy-ear {
+  background-color: #333;
+}
+
+/* 增强3D阴影效果 */
+.puppy::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 10px;
+  width: 30px;
+  height: 5px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 80%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* 修改动画为3D效果 */
+@keyframes leg-run {
+  0%, 100% {
+    transform: translateZ(4px) rotateX(0deg);
+  }
+  50% {
+    transform: translateZ(4px) rotateX(-30deg);
+  }
+}
+
+@keyframes leg-run-back {
+  0%, 100% {
+    transform: translateZ(-2px) rotateX(0deg);
+  }
+  50% {
+    transform: translateZ(-2px) rotateX(-30deg);
+  }
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotateZ(-30deg) translateZ(-2px);
+  }
+  50% {
+    transform: rotateZ(-10deg) translateZ(-2px);
+  }
+}
+
+@keyframes ear-flap {
+  0%, 100% {
+    transform: rotateY(-15deg) rotateZ(-30deg) translateZ(2px);
+  }
+  50% {
+    transform: rotateY(-15deg) rotateZ(-40deg) translateZ(2px);
+  }
+}
+
+@keyframes ear-flap-right {
+  0%, 100% {
+    transform: rotateY(15deg) rotateZ(30deg) translateZ(2px);
+  }
+  50% {
+    transform: rotateY(15deg) rotateZ(40deg) translateZ(2px);
+  }
+}
+
+@keyframes body-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* 动画应用 */
+.puppy-running .puppy-leg-front {
+  animation: leg-run 0.4s infinite;
+}
+
+.puppy-running .puppy-leg-back {
+  animation: leg-run-back 0.4s 0.2s infinite;
+}
+
+.puppy-running .puppy-tail {
+  animation: tail-wag 0.3s infinite alternate;
+}
+
+.puppy-running .puppy-ear-left {
+  animation: ear-flap 0.5s infinite;
+}
+
+.puppy-running .puppy-ear-right {
+  animation: ear-flap-right 0.5s 0.25s infinite;
+}
+
+.puppy-running {
+  animation: body-bounce 0.4s infinite;
+}
+
+/* 保留原有的其他CSS */
+</style> 

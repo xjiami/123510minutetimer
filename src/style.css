@@ -1,0 +1,358 @@
+@import url('https://fonts.cdnfonts.com/css/minecraft-4');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+:root {
+  font-family: 'Minecraft', monospace;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  color: var(--text);
+  background-color: var(--background);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* 主色调 - 蓝色系 */
+  --primary-color: #4A90E2;
+  --primary-dark: #2A70C2;
+  --primary-light: #6AACF2;
+  
+  /* 次要色调 - 暖色调强调 */
+  --secondary-color: #FF6B6B;
+  --secondary-dark: #E04F4F;
+  --secondary-light: #FF8A8A;
+  
+  /* 中性色调 */
+  --background: #F5F7FA;
+  --surface: #FFFFFF;
+  --border: #E6ECF0;
+  --text: #333333;
+  --text-light: #666666;
+  
+  /* 功能色 */
+  --success: #5AC54F;
+  --warning: #FFBE0B;
+  --error: #FF5252;
+  --info: #00BCD4;
+  
+  /* 阴影 */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-rounded: 9999px;
+  
+  /* 间距 */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+  
+  /* 动画 */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* 字体 */
+  --font-family: 'Fredoka', sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2rem;
+
+  --tertiary-color: #7ED321;
+  --tertiary-dark: #5CA816;
+  --tertiary-light: #9BE046;
+  --shadow-color: rgba(74, 144, 226, 0.2);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--background);
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#app {
+  width: 100%;
+  height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+p {
+  margin-bottom: 1rem;
+  color: var(--text-light);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+button {
+  cursor: pointer;
+  font-family: 'Fredoka', sans-serif;
+}
+
+/* Cartoon Style Elements */
+.cartoon-card {
+  background-color: var(--surface);
+  border-radius: 20px;
+  box-shadow: 0 10px 20px var(--shadow-color);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cartoon-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px var(--shadow-color);
+}
+
+.cartoon-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  display: inline-block;
+  text-decoration: none;
+  box-shadow: 0 6px 0 var(--primary-dark);
+  transition: all 0.2s;
+  position: relative;
+  top: 0;
+  text-align: center;
+}
+
+.cartoon-button:hover {
+  background-color: var(--primary-light);
+  top: -3px;
+  box-shadow: 0 9px 0 var(--primary-dark);
+  transform: scale(1.05);
+}
+
+.cartoon-button:active {
+  top: 6px;
+  box-shadow: 0 0 0 var(--primary-dark);
+  transform: scale(0.95);
+}
+
+.cartoon-button.secondary {
+  background-color: var(--secondary-color);
+  box-shadow: 0 6px 0 var(--secondary-dark);
+}
+
+.cartoon-button.secondary:hover {
+  background-color: var(--secondary-light);
+  box-shadow: 0 9px 0 var(--secondary-dark);
+}
+
+.cartoon-button.tertiary {
+  background-color: var(--tertiary-color);
+  box-shadow: 0 6px 0 var(--tertiary-dark);
+}
+
+.cartoon-button.tertiary:hover {
+  background-color: var(--tertiary-light);
+  box-shadow: 0 9px 0 var(--tertiary-dark);
+}
+
+.cartoon-button.small {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.cartoon-button.large {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+}
+
+.cartoon-input {
+  background-color: var(--surface);
+  border: 3px solid var(--border);
+  border-radius: 15px;
+  padding: 0.75rem 1rem;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1rem;
+  color: var(--text);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+}
+
+.cartoon-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--shadow-color);
+}
+
+.cartoon-checkbox {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.cartoon-checkbox input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-custom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  background-color: var(--surface);
+  border: 3px solid var(--border);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.cartoon-checkbox input:checked ~ .checkbox-custom {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkbox-custom:after {
+  content: '';
+  position: absolute;
+  display: none;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.cartoon-checkbox input:checked ~ .checkbox-custom:after {
+  display: block;
+}
+
+/* Animation Utilities */
+.bounce {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.shake {
+  animation: shake 0.8s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.7rem;
+  }
+  h3 {
+    font-size: 1.3rem;
+  }
+  .cartoon-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  h3 {
+    font-size: 1.2rem;
+  }
+  .cartoon-card {
+    padding: 1.2rem;
+  }
+} 

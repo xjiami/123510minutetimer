@@ -1,0 +1,111 @@
+<template>
+  <div class="puppy-run-timer">
+    <timer-display
+      :time-text="formattedTime"
+      :countdown-text="formattedCountdown"
+      :is-countdown-active="isCountdownActive"
+    />
+    
+    <track-component>
+      <div class="puppies-container">
+        <puppy-component
+          v-for="(puppy, index) in puppyPositions"
+          :key="index"
+          :color="getPuppyColor(index)"
+          :position="puppy.position"
+          :state="puppy.state"
+        />
+      </div>
+    </track-component>
+    
+    <race-controls
+      :is-running="raceState.isRunning"
+      :is-finished="raceState.isFinished"
+      @start="startRace"
+      @pause="pauseRace"
+      @resume="resumeRace"
+      @reset="resetRace"
+    />
+    
+    <div v-if="raceState.winner" class="winner-announcement">
+      获胜者: <span class="winner-name">{{ getWinnerName(raceState.winner) }}</span>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import PuppyComponent from './puppy/PuppyComponent.vue'
+import TrackComponent from './puppy/TrackComponent.vue'
+import TimerDisplay from './puppy/TimerDisplay.vue'
+import RaceControls from './puppy/RaceControls.vue'
+import { usePuppyRace } from './puppy/puppyRaceLogic'
+
+// 使用赛跑逻辑
+const {
+  raceState,
+  puppyPositions,
+  isCountdownActive,
+  formattedTime,
+  formattedCountdown,
+  startRace,
+  pauseRace,
+  resumeRace,
+  resetRace
+} = usePuppyRace()
+
+// 获取小狗颜色
+const getPuppyColor = (index: number): string => {
+  const colors = ['brown', 'white', 'black', 'spotted']
+  return colors[index]
+}
+
+// 获取获胜者名称
+const getWinnerName = (color: string): string => {
+  const names: Record<string, string> = {
+    brown: '棕色小狗',
+    white: '白色小狗',
+    black: '黑色小狗',
+    spotted: '斑点小狗'
+  }
+  return names[color] || '未知'
+}
+
+// 导出方法供父组件使用
+defineExpose({
+  startRace,
+  pauseRace,
+  resetRace
+})
+</script>
+
+<style scoped>
+@import '@/assets/styles/puppyVariables.css';
+
+.puppy-run-timer {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.puppies-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-puppies);
+}
+
+.winner-announcement {
+  margin-top: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: var(--primary-color);
+}
+
+.winner-name {
+  color: var(--success-color);
+  text-transform: capitalize;
+}
+</style> 

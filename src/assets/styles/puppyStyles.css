@@ -1,0 +1,283 @@
+/* puppyStyles.css - 小狗样式定义 */
+@import './puppyVariables.css';
+@import './puppyAnimations.css';
+
+/* 小狗基本容器 */
+.puppy {
+  position: absolute;
+  bottom: 10px;
+  width: var(--puppy-width);
+  height: var(--puppy-height);
+  transition: left 0.1s linear;
+}
+
+/* 小狗身体部分 */
+.puppy-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 头部 */
+.puppy-head {
+  position: absolute;
+  top: 5%;
+  left: 10%;
+  width: 45%;
+  height: 45%;
+  border-radius: 50%;
+  z-index: var(--z-puppy-head);
+}
+
+/* 脸部特征 */
+.puppy-face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.puppy-eye {
+  position: absolute;
+  top: 30%;
+  width: 15%;
+  height: 15%;
+  background-color: var(--puppy-eye-color);
+  border-radius: 50%;
+}
+
+.puppy-eye.left {
+  left: 20%;
+}
+
+.puppy-eye.right {
+  right: 20%;
+}
+
+.puppy-nose {
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20%;
+  height: 12%;
+  background-color: var(--puppy-nose-color);
+  border-radius: 50%;
+}
+
+/* 耳朵 */
+.puppy-ear {
+  position: absolute;
+  top: -20%;
+  width: 35%;
+  height: 45%;
+  border-radius: 50% 50% 0 0;
+  z-index: var(--z-puppy-ear);
+  transform-origin: bottom center;
+}
+
+.puppy-ear.left {
+  left: 0;
+  transform: rotate(-10deg);
+}
+
+.puppy-ear.right {
+  right: 0;
+  transform: rotate(10deg);
+}
+
+/* 躯干 */
+.puppy-trunk {
+  position: absolute;
+  top: 30%;
+  left: 20%;
+  width: 60%;
+  height: 40%;
+  border-radius: 40% 40% 30% 30%;
+  z-index: var(--z-puppy-trunk);
+}
+
+/* 腿部 */
+.puppy-leg {
+  position: absolute;
+  width: 10%;
+  height: 25%;
+  border-radius: 10px;
+  z-index: var(--z-puppy-leg);
+  transform-origin: top center;
+}
+
+.puppy-leg.front-left {
+  top: 65%;
+  left: 25%;
+}
+
+.puppy-leg.front-right {
+  top: 65%;
+  left: 45%;
+}
+
+.puppy-leg.back-left {
+  top: 65%;
+  right: 25%;
+}
+
+.puppy-leg.back-right {
+  top: 65%;
+  right: 45%;
+}
+
+/* 尾巴 */
+.puppy-tail {
+  position: absolute;
+  top: 40%;
+  right: 5%;
+  width: 15%;
+  height: 10%;
+  border-radius: 0 50% 50% 0;
+  transform-origin: left center;
+  z-index: var(--z-puppy-tail);
+}
+
+/* 小狗颜色变体 */
+.puppy.brown .puppy-head,
+.puppy.brown .puppy-trunk,
+.puppy.brown .puppy-leg,
+.puppy.brown .puppy-ear,
+.puppy.brown .puppy-tail {
+  background-color: var(--puppy-brown);
+}
+
+.puppy.white .puppy-head,
+.puppy.white .puppy-trunk,
+.puppy.white .puppy-leg,
+.puppy.white .puppy-ear,
+.puppy.white .puppy-tail {
+  background-color: var(--puppy-white);
+}
+
+.puppy.black .puppy-head,
+.puppy.black .puppy-trunk,
+.puppy.black .puppy-leg,
+.puppy.black .puppy-ear,
+.puppy.black .puppy-tail {
+  background-color: var(--puppy-black);
+}
+
+.puppy.spotted .puppy-head,
+.puppy.spotted .puppy-trunk,
+.puppy.spotted .puppy-leg,
+.puppy.spotted .puppy-ear,
+.puppy.spotted .puppy-tail {
+  background-color: var(--puppy-spotted-light);
+  position: relative;
+}
+
+.puppy.spotted .puppy-head::before,
+.puppy.spotted .puppy-trunk::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 30%;
+  width: 40%;
+  height: 40%;
+  background-color: var(--puppy-spotted-dark);
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+/* 运动状态类 */
+.puppy.running {
+  transition: left 0.1s linear;
+  animation: puppy-run var(--run-duration) infinite;
+}
+
+.puppy.running .puppy-leg {
+  animation: leg-run var(--leg-duration) linear infinite;
+}
+
+.puppy.running .puppy-tail {
+  animation: tail-wag var(--tail-duration) ease-in-out infinite;
+}
+
+.puppy.running .puppy-ear {
+  animation: ear-flop var(--ear-duration) ease-in-out infinite;
+}
+
+/* 结束状态 */
+.puppy.finished {
+  left: calc(100% - var(--puppy-width));
+  animation: puppy-celebrate var(--celebrate-duration) infinite;
+}
+
+/* 动画关键帧定义 - 确保基本动画在此文件中直接可用 */
+@keyframes puppy-run {
+  0% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-5px);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  75% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes leg-run {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(45deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes tail-wag {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes ear-flop {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-15deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes puppy-celebrate {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.1);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 垂直位置类 */
+.puppy:nth-child(1) { bottom: var(--puppy-position-1); }
+.puppy:nth-child(2) { bottom: var(--puppy-position-2); }
+.puppy:nth-child(3) { bottom: var(--puppy-position-3); }
+.puppy:nth-child(4) { bottom: var(--puppy-position-4); } 

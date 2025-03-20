@@ -1,0 +1,89 @@
+/* puppyVariables.css - 小狗比赛的CSS变量定义 */
+
+:root {
+  /* 颜色 */
+  --primary-color: #3F51B5;
+  --secondary-color: #FF5722;
+  --success-color: #4CAF50;
+  --warning-color: #FFC107;
+  --danger-color: #F44336;
+  --info-color: #2196F3;
+  
+  --light-text: #FFFFFF;
+  --dark-text: #212121;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  
+  /* 小狗颜色 */
+  --puppy-brown: #8B4513;
+  --puppy-white: #FFFFFF;
+  --puppy-black: #000000;
+  --puppy-spotted-light: #F5F5F5;
+  --puppy-spotted-dark: #8B4513;
+  --puppy-eye-color: #000000;
+  --puppy-nose-color: #FF69B4;
+  
+  /* 赛道颜色 */
+  --track-ground-color: #90EE90;
+  --track-ground-shade: #228B22;
+  --track-line-color: #FFFFFF;
+  --track-sky-start: #87CEEB;
+  --track-sky-end: #E0FFFF;
+  --track-marker-color: #FFFFFF;
+  
+  /* 大小 */
+  --puppy-width: 8%;
+  --puppy-height: 12%;
+  --track-height: 300px;
+  --track-line-height: 200px;
+  
+  /* 位置 */
+  --puppy-position-1: 5%;
+  --puppy-position-2: 15%;
+  --puppy-position-3: 25%;
+  --puppy-position-4: 35%;
+  --start-line-position: 5%;
+  --finish-line-position: 5%;
+  
+  /* 角度 */
+  --perspective-depth: 1000px;
+  --ground-rotate-x: 60deg;
+  --line-rotate-y: 30deg;
+  
+  /* 动画速度 */
+  --animation-speed-fast: 0.3s;
+  --animation-speed-normal: 0.5s;
+  --animation-speed-slow: 1s;
+  
+  /* 动画持续时间 */
+  --run-duration: 1s;
+  --leg-duration: 0.5s;
+  --tail-duration: 0.8s;
+  --ear-duration: 0.6s;
+  --celebrate-duration: 1.2s;
+  --pulse-duration: 1s;
+  --tail-idle-duration: 2s;
+  
+  /* 圆角 */
+  --border-radius-small: 4px;
+  --border-radius-medium: 8px;
+  --border-radius-large: 16px;
+  --border-radius-full: 50%;
+  
+  /* Z轴层级 */
+  --z-track-bg: 1;
+  --z-track-ground: 2;
+  --z-track-lines: 3;
+  --z-track-markers: 4;
+  --z-start-finish: 5;
+  --z-puppies: 6;
+  --z-puppy-head: 7;
+  --z-puppy-ear: 8;
+  --z-puppy-trunk: 9;
+  --z-puppy-leg: 10;
+  --z-puppy-tail: 11;
+  
+  /* 斑点配置 */
+  --spot-position: 50% 50%;
+  --spot-size: 30%;
+  --spot-size-end: 60%;
+} 

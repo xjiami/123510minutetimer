@@ -1,0 +1,43 @@
+<svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.2" />
+    </filter>
+    <filter id="innerShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur" />
+      <feOffset in="blur" dx="2" dy="2" result="offsetBlur" />
+      <feComposite in="SourceGraphic" in2="offsetBlur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- 背景圆 -->
+  <circle cx="70" cy="70" r="65" fill="white" filter="url(#shadow)" />
+  
+  <!-- 计时器外圈 -->
+  <circle cx="70" cy="70" r="55" fill="none" stroke="url(#bgGradient)" stroke-width="6" />
+  
+  <!-- 内部圆环 -->
+  <circle cx="70" cy="70" r="45" fill="none" stroke="url(#bgGradient)" stroke-width="2" opacity="0.5" />
+  
+  <!-- 指针 -->
+  <path d="M70,25 L80,70 L70,85 L60,70 Z" fill="url(#bgGradient)" filter="url(#innerShadow)" />
+  
+  <!-- 中心点 -->
+  <circle cx="70" cy="70" r="10" fill="url(#bgGradient)" />
+  
+  <!-- 刻度线 -->
+  <g stroke="url(#bgGradient)" stroke-width="2">
+    <line x1="70" y1="20" x2="70" y2="30" />
+    <line x1="70" y1="110" x2="70" y2="120" />
+    <line x1="20" y1="70" x2="30" y2="70" />
+    <line x1="110" y1="70" x2="120" y2="70" />
+    <line x1="33" y1="33" x2="40" y2="40" />
+    <line x1="107" y1="33" x2="100" y2="40" />
+    <line x1="33" y1="107" x2="40" y2="100" />
+    <line x1="107" y1="107" x2="100" y2="100" />
+  </g>
+</svg> 
